@@ -46,6 +46,18 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        
+        .connection-online { background-color: #10b981; }
+        .connection-offline { background-color: #ef4444; }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -59,9 +71,9 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <div id="connection-status" class="flex items-center">
-                        <span class="w-3 h-3 rounded-full bg-green-500 mr-1"></span>
-                        <span class="text-sm hidden md:inline">Online</span>
+                    <div id="connection-status" class="flex items-center px-3 py-1 rounded-full text-white connection-online">
+                        <span class="w-3 h-3 rounded-full bg-white mr-1"></span>
+                        <span class="text-sm">Online</span>
                     </div>
                     
                     <div class="relative">
@@ -88,7 +100,7 @@
         <!-- Contenido principal -->
         <main class="flex-grow container mx-auto px-4 py-6">
             <!-- Pantalla de autenticación -->
-            <div id="auth-screen" class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
+            <div id="auth-screen" class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6 fade-in">
                 <div class="text-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">Iniciar sesión</h2>
                     <p class="text-gray-600">Accede a tu cuenta para gestionar tus horas</p>
@@ -117,7 +129,7 @@
             </div>
 
             <!-- Pantalla principal de la aplicación (inicialmente oculta) -->
-            <div id="app-content" class="hidden">
+            <div id="app-content" class="hidden fade-in">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Sección izquierda: Registro de horas y proyectos -->
                     <div class="lg:col-span-1 space-y-6">
@@ -144,17 +156,21 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-gray-700 mb-2">Hora inicio</label>
-                                        <input type="time" id="start-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <input type="time" id="start-time" value="01:30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                                     </div>
                                     <div>
                                         <label class="block text-gray-700 mb-2">Hora fin</label>
-                                        <input type="time" id="end-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <input type="time" id="end-time" value="10:00" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                                     </div>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-gray-700 mb-2">Descanso (minutos)</label>
-                                    <input type="number" id="break-time" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <label class="block text-gray-700 mb-2">Descanso</label>
+                                    <select id="break-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <option value="0.5">Media hora</option>
+                                        <option value="1">1 hora</option>
+                                        <option value="2">2 horas</option>
+                                    </select>
                                 </div>
                                 
                                 <div>
@@ -228,6 +244,14 @@
                                     </select>
                                     <select id="filter-month" class="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                                         <option value="all">Todos los meses</option>
+                                    </select>
+                                    <select id="filter-ob" class="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <option value="all">Todas las OB</option>
+                                        <option value="base">Sueldo base</option>
+                                        <option value="ob1">OB 1</option>
+                                        <option value="ob2">OB 2</option>
+                                        <option value="ob3">OB 3</option>
+                                        <option value="ob4">OB 4</option>
                                     </select>
                                     <button id="export-pdf" class="bg-primary text-white p-2 rounded-md hover:bg-blue-600 transition">
                                         <i class="fas fa-file-pdf"></i>
@@ -322,6 +346,63 @@
         </div>
     </div>
 
+    <!-- Modal de edición de registro -->
+    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Editar Registro</h3>
+            
+            <div id="edit-content" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label class="block text-gray-700 mb-2">Fecha</label>
+                    <input type="date" id="edit-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Proyecto</label>
+                    <select id="edit-project" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="">Seleccionar proyecto</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Hora inicio</label>
+                        <input type="time" id="edit-start" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">Hora fin</label>
+                        <input type="time" id="edit-end" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Descanso</label>
+                    <select id="edit-break" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="0.5">Media hora</option>
+                        <option value="1">1 hora</option>
+                        <option value="2">2 horas</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Compañeros</label>
+                    <input type="text" id="edit-colleagues" placeholder="Nombres separados por comas" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Notas</label>
+                    <textarea id="edit-notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="cancel-edit-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
+                <button id="save-edit-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Configuración de Firebase
         const firebaseConfig = {
@@ -344,6 +425,11 @@
         let projects = [];
         let timeEntries = [];
         let language = 'es';
+        let currentFilter = {
+            year: 'all',
+            month: 'all',
+            ob: 'all'
+        };
         
         // Traducciones
         const translations = {
@@ -354,7 +440,7 @@
                 project: "Proyecto",
                 startTime: "Hora inicio",
                 endTime: "Hora fin",
-                breakTime: "Descanso (minutos)",
+                breakTime: "Descanso",
                 colleagues: "Compañeros",
                 notes: "Notas",
                 saveHours: "Guardar registro",
@@ -369,6 +455,7 @@
                 history: "Historial de horas",
                 allYears: "Todos los años",
                 allMonths: "Todos los meses",
+                allOB: "Todas las OB",
                 date: "Fecha",
                 hours: "Horas",
                 details: "Detalles",
@@ -385,7 +472,8 @@
                 delete: "Eliminar",
                 edit: "Editar",
                 totalHours: "Horas totales",
-                colleaguesPlaceholder: "Nombres separados por comas"
+                colleaguesPlaceholder: "Nombres separados por comas",
+                editEntry: "Editar Registro"
             },
             en: {
                 login: "Login",
@@ -394,7 +482,7 @@
                 project: "Project",
                 startTime: "Start time",
                 endTime: "End time",
-                breakTime: "Break (minutes)",
+                breakTime: "Break",
                 colleagues: "Colleagues",
                 notes: "Notes",
                 saveHours: "Save entry",
@@ -409,6 +497,7 @@
                 history: "Time History",
                 allYears: "All years",
                 allMonths: "All months",
+                allOB: "All OB",
                 date: "Date",
                 hours: "Hours",
                 details: "Details",
@@ -425,7 +514,8 @@
                 delete: "Delete",
                 edit: "Edit",
                 totalHours: "Total hours",
-                colleaguesPlaceholder: "Names separated by commas"
+                colleaguesPlaceholder: "Names separated by commas",
+                editEntry: "Edit Entry"
             },
             sv: {
                 login: "Logga in",
@@ -434,7 +524,7 @@
                 project: "Projekt",
                 startTime: "Starttid",
                 endTime: "Sluttid",
-                breakTime: "Rast (minuter)",
+                breakTime: "Rast",
                 colleagues: "Kollegor",
                 notes: "Anteckningar",
                 saveHours: "Spara post",
@@ -449,6 +539,7 @@
                 history: "Tidshistorik",
                 allYears: "Alla år",
                 allMonths: "Alla månader",
+                allOB: "Alla OB",
                 date: "Datum",
                 hours: "Timmar",
                 details: "Detaljer",
@@ -465,7 +556,8 @@
                 delete: "Ta bort",
                 edit: "Redigera",
                 totalHours: "Totalt antal timmar",
-                colleaguesPlaceholder: "Namn separerade med kommatecken"
+                colleaguesPlaceholder: "Namn separerade med kommatecken",
+                editEntry: "Redigera Post"
             }
         };
         
@@ -501,6 +593,7 @@
             document.querySelector('#detail-modal > div > h3').textContent = lang.registerDetail;
             document.getElementById('close-detail-btn').textContent = lang.close;
             document.getElementById('colleagues').placeholder = lang.colleaguesPlaceholder;
+            document.querySelector('#edit-modal > div > h3').textContent = lang.editEntry;
             
             // Actualizar tabla
             const headers = document.querySelectorAll('thead th');
@@ -516,10 +609,18 @@
             document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(3) > h2').textContent = lang.statistics;
             document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(3) > div > div:nth-child(1) > h3').textContent = lang.projectDistribution;
             document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(3) > div > div:nth-child(2) > h3').textContent = lang.weeklyHours;
+            
+            // Actualizar filtros
+            document.querySelector('#filter-ob option[value="all"]').textContent = lang.allOB;
+            document.querySelector('#filter-ob option[value="base"]').textContent = lang.baseSalary;
+            document.querySelector('#filter-ob option[value="ob1"]').textContent = lang.ob1;
+            document.querySelector('#filter-ob option[value="ob2"]').textContent = lang.ob2;
+            document.querySelector('#filter-ob option[value="ob3"]').textContent = lang.ob3;
+            document.querySelector('#filter-ob option[value="ob4"]').textContent = lang.ob4;
         }
         
-        // Función para calcular las horas OB
-        function calculateOBHours(start, end, breakMinutes) {
+        // Función para calcular las horas OB según las reglas especificadas
+        function calculateOBHours(start, end, breakHours) {
             // Convertir a objetos Date
             const startDate = new Date(start);
             const endDate = new Date(end);
@@ -529,21 +630,84 @@
             let totalHours = diffMs / (1000 * 60 * 60);
             
             // Restar el descanso
-            const breakHours = breakMinutes / 60;
             totalHours -= breakHours;
             
-            // Simular cálculo de horas OB
-            const obHours = {
-                base: totalHours * 0.7,
-                ob1: totalHours * 0.1,
-                ob2: totalHours * 0.1,
-                ob3: totalHours * 0.05,
-                ob4: totalHours * 0.05
-            };
+            // Obtener día de la semana (0: domingo, 1: lunes, ..., 6: sábado)
+            const dayOfWeek = startDate.getDay();
+            
+            // Inicializar contadores para cada tipo de hora
+            let baseHours = 0;
+            let ob1Hours = 0;
+            let ob2Hours = 0;
+            let ob3Hours = 0;
+            let ob4Hours = 0;
+            
+            // Función para agregar horas a los contadores según el tramo
+            function addHours(type, hours) {
+                switch(type) {
+                    case 'base': baseHours += hours; break;
+                    case 'ob1': ob1Hours += hours; break;
+                    case 'ob2': ob2Hours += hours; break;
+                    case 'ob3': ob3Hours += hours; break;
+                    case 'ob4': ob4Hours += hours; break;
+                }
+            }
+            
+            // Función para determinar el tipo de hora según el día y la hora
+            function getHourType(date) {
+                const hours = date.getHours() + date.getMinutes()/60;
+                
+                // Domingo (OB 4 todo el día)
+                if (dayOfWeek === 0) {
+                    return 'ob4';
+                }
+                
+                // Sábado
+                if (dayOfWeek === 6) {
+                    if (hours >= 13) {
+                        return 'ob3';
+                    } else {
+                        return 'base'; // Mañana del sábado es base
+                    }
+                }
+                
+                // Lunes a Viernes
+                if (hours >= 6 && hours < 18) {
+                    return 'base';
+                } else if (hours >= 18 && hours < 22) {
+                    return 'ob1';
+                } else {
+                    return 'ob2'; // Incluye 22:00-06:00
+                }
+            }
+            
+            // Dividir el periodo en segmentos de 1 minuto y sumar los tipos
+            const segmentDuration = 1/60; // 1 minuto en horas
+            let current = new Date(startDate);
+            
+            while (current < endDate) {
+                const next = new Date(current.getTime() + segmentDuration * 60 * 60000);
+                if (next > endDate) {
+                    next = new Date(endDate);
+                }
+                
+                const segmentHours = (next - current) / (1000 * 60 * 60);
+                const type = getHourType(current);
+                
+                addHours(type, segmentHours);
+                
+                current = next;
+            }
             
             return {
                 total: totalHours,
-                breakdown: obHours
+                breakdown: {
+                    base: baseHours,
+                    ob1: ob1Hours,
+                    ob2: ob2Hours,
+                    ob3: ob3Hours,
+                    ob4: ob4Hours
+                }
             };
         }
         
@@ -560,6 +724,16 @@
                 projects = [];
                 const projectsList = document.getElementById('projects-list');
                 projectsList.innerHTML = '';
+                const projectSelect = document.getElementById('project-select');
+                const editProjectSelect = document.getElementById('edit-project');
+                
+                // Limpiar selects excepto la primera opción
+                while (projectSelect.options.length > 1) {
+                    projectSelect.remove(1);
+                }
+                while (editProjectSelect.options.length > 1) {
+                    editProjectSelect.remove(1);
+                }
                 
                 snapshot.forEach((childSnapshot) => {
                     const project = {
@@ -572,7 +746,8 @@
                     const option = document.createElement('option');
                     option.value = project.id;
                     option.textContent = project.name;
-                    document.getElementById('project-select').appendChild(option);
+                    projectSelect.appendChild(option.cloneNode(true));
+                    editProjectSelect.appendChild(option);
                     
                     // Agregar a la lista de proyectos
                     const projectElement = document.createElement('div');
@@ -631,12 +806,38 @@
                         id: childSnapshot.key,
                         ...childSnapshot.val()
                     };
+                    
+                    // Aplicar filtros
+                    const entryDate = new Date(entry.startTime);
+                    const entryYear = entryDate.getFullYear();
+                    const entryMonth = entryDate.getMonth() + 1;
+                    
+                    if (currentFilter.year !== 'all' && entryYear !== parseInt(currentFilter.year)) {
+                        return;
+                    }
+                    
+                    if (currentFilter.month !== 'all' && entryMonth !== parseInt(currentFilter.month)) {
+                        return;
+                    }
+                    
                     timeEntries.push(entry);
                     
                     // Calcular horas
-                    const startTime = new Date(entry.startTime);
-                    const endTime = new Date(entry.endTime);
-                    const obHours = calculateOBHours(startTime, endTime, entry.breakTime || 0);
+                    const breakHours = parseFloat(entry.breakTime) || 0;
+                    const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                    
+                    // Filtrar por tipo de OB si está activo
+                    if (currentFilter.ob !== 'all') {
+                        let include = false;
+                        switch(currentFilter.ob) {
+                            case 'base': include = obHours.breakdown.base > 0; break;
+                            case 'ob1': include = obHours.breakdown.ob1 > 0; break;
+                            case 'ob2': include = obHours.breakdown.ob2 > 0; break;
+                            case 'ob3': include = obHours.breakdown.ob3 > 0; break;
+                            case 'ob4': include = obHours.breakdown.ob4 > 0; break;
+                        }
+                        if (!include) return;
+                    }
                     
                     // Actualizar resumen OB
                     obSummary.base += obHours.breakdown.base;
@@ -653,7 +854,7 @@
                     projectStats[projectName] += obHours.total;
                     
                     // Actualizar estadísticas por semana
-                    const weekStart = getWeekStartDate(startTime);
+                    const weekStart = getWeekStartDate(new Date(entry.startTime));
                     const weekKey = weekStart.toISOString().split('T')[0];
                     if (!weekStats[weekKey]) {
                         weekStats[weekKey] = 0;
@@ -704,6 +905,14 @@
                     });
                 });
                 
+                // Agregar event listeners para editar
+                document.querySelectorAll('.edit-entry').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const entryId = e.currentTarget.getAttribute('data-id');
+                        showEditForm(entryId);
+                    });
+                });
+                
                 // Agregar event listeners para eliminar entradas
                 document.querySelectorAll('.delete-entry').forEach(button => {
                     button.addEventListener('click', (e) => {
@@ -714,7 +923,7 @@
             });
         }
         
-        // Función para obtener el inicio de la semana
+        // Función para obtener el inicio de la semana (lunes)
         function getWeekStartDate(date) {
             const d = new Date(date);
             const day = d.getDay();
@@ -837,7 +1046,7 @@
             const projectId = document.getElementById('project-select').value;
             const startTime = document.getElementById('start-time').value;
             const endTime = document.getElementById('end-time').value;
-            const breakTime = document.getElementById('break-time').value || 0;
+            const breakTime = document.getElementById('break-time').value || '0.5';
             const colleagues = document.getElementById('colleagues').value;
             const notes = document.getElementById('notes').value;
             
@@ -865,7 +1074,7 @@
                 projectName,
                 startTime: startDateTime.toISOString(),
                 endTime: endDateTime.toISOString(),
-                breakTime: parseInt(breakTime),
+                breakTime: parseFloat(breakTime),
                 colleagues,
                 notes,
                 createdAt: new Date().toISOString()
@@ -875,9 +1084,9 @@
             timeRef.push(newEntry);
             
             // Limpiar formulario
-            document.getElementById('start-time').value = '';
-            document.getElementById('end-time').value = '';
-            document.getElementById('break-time').value = '30';
+            document.getElementById('start-time').value = '01:30';
+            document.getElementById('end-time').value = '10:00';
+            document.getElementById('break-time').value = '0.5';
             document.getElementById('colleagues').value = '';
             document.getElementById('notes').value = '';
         }
@@ -888,34 +1097,34 @@
             if (!entry) return;
             
             // Calcular horas
-            const startTime = new Date(entry.startTime);
-            const endTime = new Date(entry.endTime);
-            const obHours = calculateOBHours(startTime, endTime, entry.breakTime || 0);
+            const breakHours = parseFloat(entry.breakTime) || 0;
+            const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
             
+            const lang = translations[language];
             const detailContent = document.getElementById('detail-content');
             detailContent.innerHTML = `
                 <div class="grid grid-cols-2 gap-2">
-                    <div class="font-medium">Fecha:</div>
+                    <div class="font-medium">${lang.date}:</div>
                     <div>${new Date(entry.startTime).toLocaleDateString()}</div>
                     
-                    <div class="font-medium">Proyecto:</div>
+                    <div class="font-medium">${lang.project}:</div>
                     <div>${entry.projectName || 'Sin proyecto'}</div>
                     
                     <div class="font-medium">Horario:</div>
                     <div>${new Date(entry.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${new Date(entry.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                     
-                    <div class="font-medium">${translations[language].totalHours}:</div>
+                    <div class="font-medium">${lang.totalHours}:</div>
                     <div>${formatHours(obHours.total)} h</div>
                     
-                    <div class="font-medium">Descanso:</div>
-                    <div>${entry.breakTime || 0} min</div>
+                    <div class="font-medium">${lang.breakTime}:</div>
+                    <div>${entry.breakTime} h</div>
                 </div>
                 
                 <div class="pt-3">
                     <div class="font-medium">Desglose OB:</div>
                     <div class="grid grid-cols-5 gap-2 mt-2">
                         <div class="ob-base p-2 rounded text-center">
-                            <div class="font-bold">${translations[language].baseSalary}</div>
+                            <div class="font-bold">${lang.baseSalary}</div>
                             <div>${formatHours(obHours.breakdown.base)} h</div>
                         </div>
                         <div class="ob-1 p-2 rounded text-center">
@@ -939,20 +1148,93 @@
                 
                 ${entry.colleagues ? `
                 <div class="pt-3">
-                    <div class="font-medium">Compañeros:</div>
+                    <div class="font-medium">${lang.colleagues}:</div>
                     <div>${entry.colleagues}</div>
                 </div>
                 ` : ''}
                 
                 ${entry.notes ? `
                 <div class="pt-3">
-                    <div class="font-medium">Notas:</div>
+                    <div class="font-medium">${lang.notes}:</div>
                     <div>${entry.notes}</div>
                 </div>
                 ` : ''}
             `;
             
             document.getElementById('detail-modal').classList.remove('hidden');
+        }
+        
+        // Función para mostrar formulario de edición
+        function showEditForm(entryId) {
+            const entry = timeEntries.find(e => e.id === entryId);
+            if (!entry) return;
+            
+            // Rellenar formulario
+            document.getElementById('edit-id').value = entry.id;
+            document.getElementById('edit-date').value = entry.date;
+            document.getElementById('edit-start').value = new Date(entry.startTime).toTimeString().substring(0,5);
+            document.getElementById('edit-end').value = new Date(entry.endTime).toTimeString().substring(0,5);
+            document.getElementById('edit-break').value = entry.breakTime;
+            document.getElementById('edit-colleagues').value = entry.colleagues || '';
+            document.getElementById('edit-notes').value = entry.notes || '';
+            
+            // Seleccionar proyecto
+            const editProject = document.getElementById('edit-project');
+            for (let i = 0; i < editProject.options.length; i++) {
+                if (editProject.options[i].value === entry.projectId) {
+                    editProject.selectedIndex = i;
+                    break;
+                }
+            }
+            
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+        
+        // Función para guardar cambios en registro
+        function saveEditedEntry() {
+            const entryId = document.getElementById('edit-id').value;
+            const date = document.getElementById('edit-date').value;
+            const projectId = document.getElementById('edit-project').value;
+            const startTime = document.getElementById('edit-start').value;
+            const endTime = document.getElementById('edit-end').value;
+            const breakTime = document.getElementById('edit-break').value;
+            const colleagues = document.getElementById('edit-colleagues').value;
+            const notes = document.getElementById('edit-notes').value;
+            
+            if (!date || !projectId || !startTime || !endTime) {
+                alert('Por favor completa todos los campos requeridos');
+                return;
+            }
+            
+            // Obtener nombre del proyecto
+            const project = projects.find(p => p.id === projectId);
+            const projectName = project ? project.name : '';
+            
+            // Crear objetos de fecha completos
+            const startDateTime = new Date(`${date}T${startTime}`);
+            const endDateTime = new Date(`${date}T${endTime}`);
+            
+            // Si la hora de fin es anterior a la de inicio, asumir que es del día siguiente
+            if (endDateTime < startDateTime) {
+                endDateTime.setDate(endDateTime.getDate() + 1);
+            }
+            
+            const updatedEntry = {
+                date,
+                projectId,
+                projectName,
+                startTime: startDateTime.toISOString(),
+                endTime: endDateTime.toISOString(),
+                breakTime: parseFloat(breakTime),
+                colleagues,
+                notes
+            };
+            
+            const entryRef = database.ref(`users/${currentUser.uid}/timeEntries/${entryId}`);
+            entryRef.update(updatedEntry);
+            
+            // Cerrar modal
+            document.getElementById('edit-modal').classList.add('hidden');
         }
         
         // Función para eliminar registro de horas
@@ -965,14 +1247,82 @@
         
         // Función para exportar a PDF
         function exportToPDF() {
-            // Simulación de exportación a PDF
-            alert('La función de exportar a PDF se activaría aquí. En una implementación real, se usaría jsPDF y html2canvas.');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Título
+            doc.setFontSize(18);
+            doc.text('Historial de Horas', 105, 15, { align: 'center' });
+            
+            // Fecha de exportación
+            doc.setFontSize(10);
+            doc.text(`Exportado el: ${new Date().toLocaleDateString()}`, 105, 22, { align: 'center' });
+            
+            // Tabla
+            const headers = [['Fecha', 'Proyecto', 'Horas Totales', 'Sueldo Base', 'OB 1', 'OB 2', 'OB 3', 'OB 4']];
+            const data = timeEntries.map(entry => {
+                const breakHours = parseFloat(entry.breakTime) || 0;
+                const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                
+                return [
+                    new Date(entry.startTime).toLocaleDateString(),
+                    entry.projectName || 'Sin proyecto',
+                    formatHours(obHours.total),
+                    formatHours(obHours.breakdown.base),
+                    formatHours(obHours.breakdown.ob1),
+                    formatHours(obHours.breakdown.ob2),
+                    formatHours(obHours.breakdown.ob3),
+                    formatHours(obHours.breakdown.ob4)
+                ];
+            });
+            
+            doc.autoTable({
+                head: headers,
+                body: data,
+                startY: 25,
+                theme: 'grid',
+                headStyles: { fillColor: [59, 130, 246] }
+            });
+            
+            // Guardar
+            doc.save('historial_horas.pdf');
         }
         
         // Función para exportar a JSON
         function exportToJSON() {
-            // Simulación de exportación a JSON
-            alert('La función de exportar a JSON se activaría aquí. En una implementación real, se descargaría un archivo JSON.');
+            const data = timeEntries.map(entry => {
+                const breakHours = parseFloat(entry.breakTime) || 0;
+                const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                
+                return {
+                    id: entry.id,
+                    date: entry.date,
+                    project: entry.projectName,
+                    startTime: new Date(entry.startTime).toLocaleTimeString(),
+                    endTime: new Date(entry.endTime).toLocaleTimeString(),
+                    breakTime: entry.breakTime,
+                    colleagues: entry.colleagues,
+                    notes: entry.notes,
+                    totalHours: obHours.total,
+                    baseHours: obHours.breakdown.base,
+                    ob1Hours: obHours.breakdown.ob1,
+                    ob2Hours: obHours.breakdown.ob2,
+                    ob3Hours: obHours.breakdown.ob3,
+                    ob4Hours: obHours.breakdown.ob4
+                };
+            });
+            
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'historial_horas.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
         
         // Inicializar la aplicación cuando el DOM esté listo
@@ -1090,17 +1440,42 @@
                 translateUI();
             });
             
+            // Filtros
+            document.getElementById('filter-year').addEventListener('change', (e) => {
+                currentFilter.year = e.target.value;
+                loadTimeEntries(currentUser.uid);
+            });
+            
+            document.getElementById('filter-month').addEventListener('change', (e) => {
+                currentFilter.month = e.target.value;
+                loadTimeEntries(currentUser.uid);
+            });
+            
+            document.getElementById('filter-ob').addEventListener('change', (e) => {
+                currentFilter.ob = e.target.value;
+                loadTimeEntries(currentUser.uid);
+            });
+            
+            // Edición
+            document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+                document.getElementById('edit-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('save-edit-btn').addEventListener('click', saveEditedEntry);
+            
             // Detectar estado de conexión
             window.addEventListener('online', () => {
-                document.querySelector('#connection-status span').classList.remove('bg-red-500');
-                document.querySelector('#connection-status span').classList.add('bg-green-500');
-                document.querySelector('#connection-status span:last-child').textContent = 'Online';
+                const status = document.getElementById('connection-status');
+                status.classList.remove('connection-offline');
+                status.classList.add('connection-online');
+                status.innerHTML = '<span class="w-3 h-3 rounded-full bg-white mr-1"></span> Online';
             });
             
             window.addEventListener('offline', () => {
-                document.querySelector('#connection-status span').classList.remove('bg-green-500');
-                document.querySelector('#connection-status span').classList.add('bg-red-500');
-                document.querySelector('#connection-status span:last-child').textContent = 'Offline';
+                const status = document.getElementById('connection-status');
+                status.classList.remove('connection-online');
+                status.classList.add('connection-offline');
+                status.innerHTML = '<span class="w-3 h-3 rounded-full bg-white mr-1"></span> Offline';
             });
             
             // Extensión para obtener número de semana
