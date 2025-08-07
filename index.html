@@ -168,7 +168,7 @@
                                 <div>
                                     <label class="block text-gray-700 mb-2">Descanso</label>
                                     <select id="break-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="0.0">0.0</option>
+										<option value="0.0">0.0</option>
                                         <option value="0.5">Media hora</option>
                                         <option value="1">1 hora</option>
                                         <option value="2">2 horas</option>
@@ -623,66 +623,95 @@
         
         // Función para calcular las horas OB según las reglas especificadas
         function calculateOBHours(start, end, breakHours) {
-    const MS_PER_HOUR = 1000 * 60 * 60;
-    const MINUTE_SEGMENT_MS = 60 * 1000;
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const dayOfWeek = startDate.getDay(); // 0 = domingo
-
-    // Duración total (en horas), excluyendo el descanso
-    const totalWorkedHours = ((endDate - startDate) / MS_PER_HOUR) - breakHours;
-
-    // Inicializar acumuladores de horas OB
-    const obHours = {
-        base: 0,
-        ob1: 0,
-        ob2: 0,
-        ob3: 0,
-        ob4: 0
-    };
-
-    // Determina el tipo de OB para una hora específica
-    function getHourType(date) {
-        const hour = date.getHours() + date.getMinutes() / 60;
-
-        if (dayOfWeek === 0) return 'ob4'; // Domingo: todo es OB 4
-        if (dayOfWeek === 6) return hour >= 13 ? 'ob3' : 'base'; // Sábado
-        if (hour >= 6 && hour < 18) return 'base';
-        if (hour >= 18 && hour < 22) return 'ob1';
-        return 'ob2'; // 22:00 a 06:00
-    }
-
-    // Simular avance minuto a minuto
-    let current = new Date(startDate.getTime());
-    const totalSegmentTime = (endDate - startDate) / MS_PER_HOUR;
-    const effectiveSegmentTime = totalSegmentTime - breakHours;
-    const segmentsToSkip = Math.round(breakHours * 60); // en minutos
-
-    let skippedSegments = 0;
-
-    while (current < endDate) {
-        const next = new Date(current.getTime() + MINUTE_SEGMENT_MS);
-        if (skippedSegments < segmentsToSkip) {
-            skippedSegments++;
-        } else {
-            const hourType = getHourType(current);
-            obHours[hourType] += 1 / 60;
+            // Convertir a objetos Date
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            
+            // Calcular diferencia total en horas
+            const diffMs = endDate - startDate;
+            let totalHours = diffMs / (1000 * 60 * 60);
+            
+            // Restar el descanso
+            totalHours -= breakHours;
+            
+            // Obtener día de la semana (0: domingo, 1: lunes, ..., 6: sábado)
+            const dayOfWeek = startDate.getDay();
+            
+            // Inicializar contadores para cada tipo de hora
+            let baseHours = 0;
+            let ob1Hours = 0;
+            let ob2Hours = 0;
+            let ob3Hours = 0;
+            let ob4Hours = 0;
+            
+            // Función para agregar horas a los contadores según el tramo
+            function addHours(type, hours) {
+                switch(type) {
+                    case 'base': baseHours += hours; break;
+                    case 'ob1': ob1Hours += hours; break;
+                    case 'ob2': ob2Hours += hours; break;
+                    case 'ob3': ob3Hours += hours; break;
+                    case 'ob4': ob4Hours += hours; break;
+                }
+            }
+            
+            // Función para determinar el tipo de hora según el día y la hora
+            function getHourType(date) {
+                const hours = date.getHours() + date.getMinutes()/60;
+                
+                // Domingo (OB 4 todo el día)
+                if (dayOfWeek === 0) {
+                    return 'ob4';
+                }
+                
+                // Sábado
+                if (dayOfWeek === 6) {
+                    if (hours >= 13) {
+                        return 'ob3';
+                    } else {
+                        return 'base'; // Mañana del sábado es base
+                    }
+                }
+                
+                // Lunes a Viernes
+                if (hours >= 6 && hours < 18) {
+                    return 'base';
+                } else if (hours >= 18 && hours < 22) {
+                    return 'ob1';
+                } else {
+                    return 'ob2'; // Incluye 22:00-06:00
+                }
+            }
+            
+            // Dividir el periodo en segmentos de 1 minuto y sumar los tipos
+            const segmentDuration = 1/60; // 1 minuto en horas
+            let current = new Date(startDate);
+            
+            while (current < endDate) {
+                const next = new Date(current.getTime() + segmentDuration * 60 * 60000);
+                if (next > endDate) {
+                    next = new Date(endDate);
+                }
+                
+                const segmentHours = (next - current) / (1000 * 60 * 60);
+                const type = getHourType(current);
+                
+                addHours(type, segmentHours);
+                
+                current = next;
+            }
+            
+            return {
+                total: totalHours,
+                breakdown: {
+                    base: baseHours,
+                    ob1: ob1Hours,
+                    ob2: ob2Hours,
+                    ob3: ob3Hours,
+                    ob4: ob4Hours
+                }
+            };
         }
-        current = next;
-    }
-
-    return {
-        total: totalWorkedHours,
-        breakdown: {
-            base: obHours.base,
-            ob1: obHours.ob1,
-            ob2: obHours.ob2,
-            ob3: obHours.ob3,
-            ob4: obHours.ob4
-        }
-    };
-}
         
         // Función para formatear horas
         function formatHours(hours) {
@@ -1396,48 +1425,35 @@
         
         // Inicializar la aplicación cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', () => {
+            // Establecer fecha actual en el campo de fecha
             const today = new Date();
-        
-            // Establecer la fecha actual en el campo de registro
-            const workDateInput = document.getElementById('work-date');
-            if (workDateInput) {
-                workDateInput.value = today.toISOString().split('T')[0];
-            }
-        
-            // Configurar opciones de año en el filtro
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('work-date').value = formattedDate;
+            
+            // Configurar años para el filtro
             const yearSelect = document.getElementById('filter-year');
-            if (yearSelect) {
-                const currentYear = today.getFullYear();
-                for (let year = currentYear; year >= currentYear - 5; year--) {
-                    const option = document.createElement('option');
-                    option.value = year;
-                    option.textContent = year;
-                    yearSelect.appendChild(option);
-                }
+            const currentYear = today.getFullYear();
+            for (let year = currentYear; year >= currentYear - 5; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
             }
-        
-            // Configurar opciones de mes en el filtro
+            
+            // Configurar meses para el filtro
             const monthSelect = document.getElementById('filter-month');
-            if (monthSelect) {
-                const months = [
-                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-                ];
-        
-                months.forEach((month, index) => {
-                    const option = document.createElement('option');
-                    option.value = index + 1;
-                    option.textContent = month;
-                    monthSelect.appendChild(option);
-                });
-            }
-        
-            // Configurar el idioma inicial según selección actual
-            const languageSelector = document.getElementById('language-select');
-            if (languageSelector) {
-                language = languageSelector.value || 'es';
-                translateUI();
-            }
+            const months = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            
+            months.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+            
             // Inicializar Firebase Auth state observer
             auth.onAuthStateChanged((user) => {
                 if (user) {
@@ -1475,25 +1491,17 @@
                     });
             });
             
-             document.getElementById('register-btn').addEventListener('click', () => {
+            document.getElementById('register-btn').addEventListener('click', () => {
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 const authMessage = document.getElementById('auth-message');
-            
+                
                 auth.createUserWithEmailAndPassword(email, password)
                     .then(() => {
-                        authMessage.textContent = ''; // Limpia mensajes anteriores
+                        // Usuario creado exitosamente
                     })
                     .catch((error) => {
-                        if (error.code === 'auth/email-already-in-use') {
-                            authMessage.textContent = 'Este correo ya está registrado. Intenta iniciar sesión.';
-                        } else if (error.code === 'auth/invalid-email') {
-                            authMessage.textContent = 'El correo no es válido.';
-                        } else if (error.code === 'auth/weak-password') {
-                            authMessage.textContent = 'La contraseña debe tener al menos 6 caracteres.';
-                        } else {
-                            authMessage.textContent = error.message;
-                        }
+                        authMessage.textContent = error.message;
                     });
             });
             
