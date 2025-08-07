@@ -1396,35 +1396,48 @@
         
         // Inicializar la aplicación cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', () => {
-            // Establecer fecha actual en el campo de fecha
             const today = new Date();
-            const formattedDate = today.toISOString().split('T')[0];
-            document.getElementById('work-date').value = formattedDate;
-            
-            // Configurar años para el filtro
-            const yearSelect = document.getElementById('filter-year');
-            const currentYear = today.getFullYear();
-            for (let year = currentYear; year >= currentYear - 5; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
+        
+            // Establecer la fecha actual en el campo de registro
+            const workDateInput = document.getElementById('work-date');
+            if (workDateInput) {
+                workDateInput.value = today.toISOString().split('T')[0];
             }
-            
-            // Configurar meses para el filtro
+        
+            // Configurar opciones de año en el filtro
+            const yearSelect = document.getElementById('filter-year');
+            if (yearSelect) {
+                const currentYear = today.getFullYear();
+                for (let year = currentYear; year >= currentYear - 5; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                }
+            }
+        
+            // Configurar opciones de mes en el filtro
             const monthSelect = document.getElementById('filter-month');
-            const months = [
-                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-            ];
-            
-            months.forEach((month, index) => {
-                const option = document.createElement('option');
-                option.value = index + 1;
-                option.textContent = month;
-                monthSelect.appendChild(option);
-            });
-            
+            if (monthSelect) {
+                const months = [
+                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                ];
+        
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.textContent = month;
+                    monthSelect.appendChild(option);
+                });
+            }
+        
+            // Configurar el idioma inicial según selección actual
+            const languageSelector = document.getElementById('language-select');
+            if (languageSelector) {
+                language = languageSelector.value || 'es';
+                translateUI();
+            }
             // Inicializar Firebase Auth state observer
             auth.onAuthStateChanged((user) => {
                 if (user) {
@@ -1559,6 +1572,7 @@
     </script>
 </body>
 </html>
+
 
 
 
