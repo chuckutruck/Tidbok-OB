@@ -622,39 +622,68 @@
         }
         
         // Función para calcular las horas OB según las reglas especificadas
-        function calculateOBHours(start, end, breakHours) {
-            // Convertir a objetos Date
-            const startDate = new Date(start);
-            const endDate = new Date(end);
-            
-            // Calcular diferencia total en horas
-            const diffMs = endDate - startDate;
-            let totalHours = diffMs / (1000 * 60 * 60);
-            
-            // Restar el descanso
-            totalHours -= breakHours;
-            
-            // Obtener día de la semana (0: domingo, 1: lunes, ..., 6: sábado)
-            const dayOfWeek = startDate.getDay();
-            
-            // Inicializar contadores para cada tipo de hora
-            let baseHours = 0;
-            let ob1Hours = 0;
-            let ob2Hours = 0;
-            let ob3Hours = 0;
-            let ob4Hours = 0;
-            
-            // Función para agregar horas a los contadores según el tramo
-            function addHours(type, hours) {
-                switch(type) {
-                    case 'base': baseHours += hours; break;
-                    case 'ob1': ob1Hours += hours; break;
-                    case 'ob2': ob2Hours += hours; break;
-                    case 'ob3': ob3Hours += hours; break;
-                    case 'ob4': ob4Hours += hours; break;
-                }
-            }
-            
+		function calculateOBHours(start, end, breakHours) {
+			const MS_PER_HOUR = 1000 * 60 * 60;
+			const MINUTE_SEGMENT_MS = 60 * 1000;
+
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+			const dayOfWeek = startDate.getDay(); // 0 = domingo
+
+			// Duración total (en horas), excluyendo el descanso
+			const totalWorkedHours = ((endDate - startDate) / MS_PER_HOUR) - breakHours;
+
+			// Inicializar acumuladores de horas OB
+			const obHours = {
+				base: 0,
+				ob1: 0,
+				ob2: 0,
+				ob3: 0,
+				ob4: 0
+			};
+
+			// Determina el tipo de OB para una hora específica
+			function getHourType(date) {
+				const hour = date.getHours() + date.getMinutes() / 60;
+
+				if (dayOfWeek === 0) return 'ob4'; // Domingo: todo es OB 4
+				if (dayOfWeek === 6) return hour >= 13 ? 'ob3' : 'base'; // Sábado
+				if (hour >= 6 && hour < 18) return 'base';
+				if (hour >= 18 && hour < 22) return 'ob1';
+				return 'ob2'; // 22:00 a 06:00
+			}
+
+			// Simular avance minuto a minuto
+			let current = new Date(startDate.getTime());
+			const totalSegmentTime = (endDate - startDate) / MS_PER_HOUR;
+			const effectiveSegmentTime = totalSegmentTime - breakHours;
+			const segmentsToSkip = Math.round(breakHours * 60); // en minutos
+
+			let skippedSegments = 0;
+
+			while (current < endDate) {
+				const next = new Date(current.getTime() + MINUTE_SEGMENT_MS);
+				if (skippedSegments < segmentsToSkip) {
+					skippedSegments++;
+				} else {
+					const hourType = getHourType(current);
+					obHours[hourType] += 1 / 60;
+				}
+				current = next;
+			}
+
+			return {
+				total: totalWorkedHours,
+				breakdown: {
+					base: obHours.base,
+					ob1: obHours.ob1,
+					ob2: obHours.ob2,
+					ob3: obHours.ob3,
+					ob4: obHours.ob4
+				}
+			};
+		}
+		
             // Función para determinar el tipo de hora según el día y la hora
             function getHourType(date) {
                 const hours = date.getHours() + date.getMinutes()/60;
