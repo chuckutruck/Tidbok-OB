@@ -683,64 +683,7 @@
 				}
 			};
 		}
-		
-            // Función para determinar el tipo de hora según el día y la hora
-            function getHourType(date) {
-                const hours = date.getHours() + date.getMinutes()/60;
-                
-                // Domingo (OB 4 todo el día)
-                if (dayOfWeek === 0) {
-                    return 'ob4';
-                }
-                
-                // Sábado
-                if (dayOfWeek === 6) {
-                    if (hours >= 13) {
-                        return 'ob3';
-                    } else {
-                        return 'base'; // Mañana del sábado es base
-                    }
-                }
-                
-                // Lunes a Viernes
-                if (hours >= 6 && hours < 18) {
-                    return 'base';
-                } else if (hours >= 18 && hours < 22) {
-                    return 'ob1';
-                } else {
-                    return 'ob2'; // Incluye 22:00-06:00
-                }
-            }
-            
-            // Dividir el periodo en segmentos de 1 minuto y sumar los tipos
-            const segmentDuration = 1/60; // 1 minuto en horas
-            let current = new Date(startDate);
-            
-            while (current < endDate) {
-                const next = new Date(current.getTime() + segmentDuration * 60 * 60000);
-                if (next > endDate) {
-                    next = new Date(endDate);
-                }
-                
-                const segmentHours = (next - current) / (1000 * 60 * 60);
-                const type = getHourType(current);
-                
-                addHours(type, segmentHours);
-                
-                current = next;
-            }
-            
-            return {
-                total: totalHours,
-                breakdown: {
-                    base: baseHours,
-                    ob1: ob1Hours,
-                    ob2: ob2Hours,
-                    ob3: ob3Hours,
-                    ob4: ob4Hours
-                }
-            };
-        }
+
         
         // Función para formatear horas
         function formatHours(hours) {
