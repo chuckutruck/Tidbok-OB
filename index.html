@@ -1464,18 +1464,34 @@
             });
             
             document.getElementById('register-btn').addEventListener('click', () => {
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const authMessage = document.getElementById('auth-message');
-                
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then(() => {
-                        // Usuario creado exitosamente
-                    })
-                    .catch((error) => {
-                        authMessage.textContent = error.message;
-                    });
-            });
+			    const nombre = document.getElementById('nombre').value;
+			    const apellido = document.getElementById('apellido').value;
+			    const telefono = document.getElementById('telefono').value;
+			    const email = document.getElementById('email').value;
+			    const password = document.getElementById('password').value;
+			    const authMessage = document.getElementById('auth-message');
+			
+			    auth.createUserWithEmailAndPassword(email, password)
+			        .then((cred) => {
+			            // Guardar datos adicionales en Firestore
+			            return firebase.firestore().collection('usuarios').doc(cred.user.uid).set({
+			                nombre,
+			                apellido,
+			                telefono,
+			                email,
+			                creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+			            });
+			        })
+			        .then(() => {
+			            authMessage.style.color = "green";
+			            authMessage.textContent = "Cuenta creada correctamente";
+			        })
+			        .catch((error) => {
+			            authMessage.style.color = "red";
+			            authMessage.textContent = error.message;
+			        });
+			});
+
             
             document.getElementById('logout-btn').addEventListener('click', () => {
                 auth.signOut();
@@ -1560,3 +1576,4 @@
     </script>
 </body>
 </html>
+
