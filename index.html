@@ -1429,30 +1429,34 @@
             });
             
             // Inicializar Firebase Auth state observer
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    // Usuario logueado
-                    currentUser = user;
-                    document.getElementById('auth-screen').classList.add('hidden');
-                    document.getElementById('app-content').classList.remove('hidden');
-                    document.addEventListener('DOMContentLoaded', () => {
-					    translateUI();
-                    
-                    // Actualizar información de usuario
-                    document.getElementById('user-name').textContent = user.displayName || user.email;
-                    document.getElementById('user-avatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`;
-                    
-                    // Cargar datos del usuario
-                    loadProjects(user.uid);
-                    loadTimeEntries(user.uid);
-                } else {
-                    // Usuario no logueado
-                    currentUser = null;
-                    document.getElementById('auth-screen').classList.remove('hidden');
-                    document.getElementById('app-content').classList.add('hidden');
-                    document.getElementById('user-info').classList.add('hidden');
-                }
-            });
+			auth.onAuthStateChanged((user) => {
+			    if (user) {
+			        // Usuario logueado
+			        currentUser = user;
+			        document.getElementById('auth-screen').classList.add('hidden');
+			        document.getElementById('app-content').classList.remove('hidden');
+			        document.getElementById('user-info').classList.remove('hidden');
+			
+			        // Traducir interfaz según idioma seleccionado
+			        translateUI();
+			
+			        // Actualizar información de usuario
+			        document.getElementById('user-name').textContent = user.displayName || user.email;
+			        document.getElementById('user-avatar').src = user.photoURL || 
+			            `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=random`;
+			
+			        // Cargar datos del usuario
+			        loadProjects(user.uid);
+			        loadTimeEntries(user.uid);
+			
+			    } else {
+			        // Usuario no logueado
+			        currentUser = null;
+			        document.getElementById('auth-screen').classList.remove('hidden');
+			        document.getElementById('app-content').classList.add('hidden');
+			        document.getElementById('user-info').classList.add('hidden');
+			    }
+			});
             
             // Event listeners
             document.getElementById('login-btn').addEventListener('click', () => {
@@ -1579,6 +1583,7 @@
     </script>
 </body>
 </html>
+
 
 
 
