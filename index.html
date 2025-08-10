@@ -899,12 +899,13 @@
         }
         
         // Función para obtener el inicio de la semana (lunes)
-        function getWeekStartDate(date) {
-            const d = new Date(date);
-            const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajuste para que la semana comience el lunes
-            return new Date(d.setDate(diff));
-        }
+		function getWeekStartDate(date) {
+		    // Crear una copia de la fecha en local (sin hora)
+		    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+		    const day = d.getDay(); // 0 = domingo
+		    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // lunes como inicio
+		    return new Date(d.setDate(diff));
+		}
         
         // Función para actualizar gráficos
         function updateCharts(projectStats, weekStats) {
@@ -1577,5 +1578,6 @@
     </script>
 </body>
 </html>
+
 
 
