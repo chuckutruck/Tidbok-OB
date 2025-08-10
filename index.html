@@ -820,20 +820,21 @@
                     obSummary.ob3 += obHours.breakdown.ob3;
                     obSummary.ob4 += obHours.breakdown.ob4;
                     
-                    // Actualizar estadísticas por proyecto
-                    const projectName = entry.projectName || 'Sin proyecto';
-                    if (!projectStats[projectName]) {
-                        projectStats[projectName] = 0;
-                    }
-                    projectStats[projectName] += obHours.total;
-                    
-                    // Actualizar estadísticas por semana
-                    const weekStart = getWeekStartDate(new Date(entry.startTime));
-                    const weekKey = weekStart.toISOString().split('T')[0];
-                    if (!weekStats[weekKey]) {
-                        weekStats[weekKey] = 0;
-                    }
-                    weekStats[weekKey] += obHours.total;
+					// Actualizar estadísticas por proyecto
+					const projectName = entry.projectName || 'Sin proyecto';
+					if (!projectStats[projectName]) {
+					    projectStats[projectName] = 0;
+					}
+					projectStats[projectName] += obHours.total;
+					
+					// Actualizar estadísticas por semana (ajustado a fecha local)
+					const weekStart = getWeekStartDate(new Date(entry.startTime));
+					const weekKey = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, '0')}-${String(weekStart.getDate()).padStart(2, '0')}`;
+					
+					if (!weekStats[weekKey]) {
+					    weekStats[weekKey] = 0;
+					}
+					weekStats[weekKey] += obHours.total;
                     
                     // Formatear fecha
                     const dateStr = new Date(entry.startTime).toLocaleDateString();
@@ -1576,4 +1577,5 @@
     </script>
 </body>
 </html>
+
 
