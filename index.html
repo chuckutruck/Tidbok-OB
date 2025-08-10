@@ -1435,7 +1435,8 @@
                     currentUser = user;
                     document.getElementById('auth-screen').classList.add('hidden');
                     document.getElementById('app-content').classList.remove('hidden');
-                    document.getElementById('user-info').classList.remove('hidden');
+                    document.addEventListener('DOMContentLoaded', () => {
+					    translateUI();
                     
                     // Actualizar información de usuario
                     document.getElementById('user-name').textContent = user.displayName || user.email;
@@ -1578,6 +1579,7 @@
     </script>
 </body>
 </html>
+
 
 
 
