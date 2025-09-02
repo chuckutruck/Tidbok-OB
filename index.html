@@ -6,10 +6,45 @@
     <title>Tidbok OB - Timregistrering</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- Firebase SDK Modular -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        
+        // Firebase-konfiguration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLezJUZMmeLllsdEPCUVkDBKwwR6OuoD8",
+            authDomain: "userbase-5061c.firebaseapp.com",
+            databaseURL: "https://userbase-5061c-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "userbase-5061c",
+            storageBucket: "userbase-5061c.appspot.com",
+            messagingSenderId: "414829360217",
+            appId: "1:414829360217:web:21d0839ee0ccfbea336d48"
+        };
+        
+        // Initiera Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        
+        // Exportera till global scope för användning i andra script-delar
+        window.firebase = {
+            auth,
+            database,
+            ref,
+            set,
+            push,
+            onValue,
+            update,
+            remove,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged,
+            updateProfile
+        };
+    </script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- jsPDF y AutoTable -->
@@ -58,6 +93,106 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        
+        .settings-panel {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .settings-panel.hidden {
+            max-height: 0;
+            opacity: 0;
+            padding: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            cursor: pointer;
+        }
+        
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .auth-tab {
+            display: none;
+        }
+        
+        .auth-tab.active {
+            display: block;
+        }
+        
+        .month-header {
+            cursor: pointer;
+            padding: 0.75rem;
+            background-color: #f1f5f9;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .month-header:hover {
+            background-color: #e2e8f0;
+        }
+        
+        .month-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .month-content.collapsed {
+            max-height: 0;
+        }
+        
+        .month-content.expanded {
+            max-height: 1000px;
+        }
+        
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+        
+        .chevron.rotated {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -76,18 +211,17 @@
                         <span class="text-sm">Online</span>
                     </div>
                     
-                    <div class="relative">
-                        <select id="language-select" class="bg-primary border border-white rounded px-2 py-1 text-white">
-                            <option value="sv" selected>Svenska</option>
-                            <option value="en">English</option>
-                            <option value="es">Español</option>
-                        </select>
-                    </div>
+                    <button id="settings-toggle" class="p-2 rounded-full hover:bg-blue-700">
+                        <i class="fas fa-cog"></i>
+                    </button>
                     
                     <div id="user-info" class="hidden">
                         <div class="flex items-center">
                             <img id="user-avatar" class="w-8 h-8 rounded-full mr-2" src="https://ui-avatars.com/api/?background=random&name=U" alt="Avatar">
                             <span id="user-name" class="mr-2">Användare</span>
+                            <button id="profile-btn" class="bg-white text-primary px-3 py-1 rounded hover:bg-gray-200 transition mr-2">
+                                <i class="fas fa-user"></i>
+                            </button>
                             <button id="logout-btn" class="bg-white text-primary px-3 py-1 rounded hover:bg-gray-200 transition">
                                 <i class="fas fa-sign-out-alt"></i>
                             </button>
@@ -97,32 +231,108 @@
             </div>
         </nav>
 
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel bg-gray-100 border-b hidden">
+            <div class="container mx-auto px-4 py-4">
+                <h3 class="text-lg font-semibold mb-4">Företagsinställningar</h3>
+                <form id="company-settings-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="company-name" class="form-label">Företagsnamn (valfritt)</label>
+                        <input type="text" id="company-name" class="form-control" placeholder="Geomira Mätkonslut AB">
+                    </div>		
+                    <div class="form-group">
+                        <label for="company-address" class="form-label">Adress</label>
+                        <input type="text" id="company-address" class="form-control" placeholder="Köpmangatan 5, plan 10">
+                    </div>
+                    <div class="form-group">
+                        <label for="company-postal" class="form-label">Postnummer och ort</label>
+                        <input type="text" id="company-postal" class="form-control" placeholder="151 71 Södertälje">
+                    </div>
+                    <div class="form-group">
+                        <label for="company-phone" class="form-label">Telefon</label>
+                        <input type="text" id="company-phone" class="form-control" placeholder="079-079 00 45">
+                    </div>
+                    <div class="form-group">
+                        <label for="company-orgnr" class="form-label">Organisationsnummer</label>
+                        <input type="text" id="company-orgnr" class="form-control" placeholder="559096-5983">
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <button type="submit" class="btn-primary">Spara inställningar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Huvudinnehåll -->
         <main class="flex-grow container mx-auto px-4 py-6">
             <!-- Inloggningsskärm -->
             <div id="auth-screen" class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6 fade-in">
                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Logga in</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">Tidbok OB</h2>
                     <p class="text-gray-600">Logga in för att hantera dina timmar</p>
                 </div>
                 
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2" for="email">E-post</label>
-                    <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                <div class="flex border-b mb-4">
+                    <button id="login-tab-btn" class="tab-button active w-1/2">Logga in</button>
+                    <button id="register-tab-btn" class="tab-button w-1/2">Skapa konto</button>
                 </div>
                 
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2" for="password">Lösenord</label>
-                    <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                <!-- Inloggning -->
+                <div id="login-tab" class="auth-tab active">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="email">E-post</label>
+                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="password">Lösenord</label>
+                        <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <button id="login-btn" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
+                            Logga in
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="mb-6">
-                    <button id="login-btn" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
-                        Logga in
-                    </button>
-                    <button id="register-btn" class="w-full mt-2 bg-secondary text-white py-2 px-4 rounded-md hover:bg-green-500 transition">
-                        Skapa konto
-                    </button>
+                <!-- Registrering -->
+                <div id="register-tab" class="auth-tab">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="reg-email">E-post</label>
+                        <input type="email" id="reg-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="reg-password">Lösenord</label>
+                        <input type="password" id="reg-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="reg-firstname">Förnamn</label>
+                        <input type="text" id="reg-firstname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="reg-lastname">Efternamn</label>
+                        <input type="text" id="reg-lastname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="reg-phone">Telefon</label>
+                        <input type="text" id="reg-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2" for="reg-personalnumber">Personnummer</label>
+                        <input type="text" id="reg-personalnumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <button id="register-btn" class="w-full bg-secondary text-white py-2 px-4 rounded-md hover:bg-green-500 transition">
+                            Skapa konto
+                        </button>
+                    </div>
                 </div>
                 
                 <div id="auth-message" class="text-center text-red-500"></div>
@@ -168,7 +378,7 @@
                                     <label class="block text-gray-700 mb-2">Rast</label>
                                     <select id="break-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                                         <option value="0.0">0.0</option>
-                                        <option value="0.5">En halvtimme</option>
+                                        <option value="0.5" selected>En halvtimme</option>
                                         <option value="1">1 timme</option>
                                         <option value="2">2 timmar</option>
                                     </select>
@@ -257,27 +467,14 @@
                                     <button id="export-pdf" class="bg-primary text-white p-2 rounded-md hover:bg-blue-600 transition">
                                         <i class="fas fa-file-pdf"></i>
                                     </button>
-                                    <button id="export-json" class="bg-secondary text-white p-2 rounded-md hover:bg-green-500 transition">
-                                        <i class="fas fa-file-code"></i>
+                                    <button id="export-word" class="bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition">
+                                        <i class="fas fa-file-word"></i>
                                     </button>
                                 </div>
                             </div>
                             
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projekt</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timmar</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detaljer</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Åtgärder</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="hours-history" class="bg-white divide-y divide-gray-200">
-                                        <!-- Historik kommer att laddas här -->
-                                    </tbody>
-                                </table>
+                            <div id="hours-history" class="overflow-x-auto">
+                                <!-- Historik kommer att laddas här med månadsgrupper -->
                             </div>
                         </div>
                         
@@ -333,6 +530,45 @@
             <div class="flex justify-end space-x-3">
                 <button id="cancel-project-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Avbryt</button>
                 <button id="save-project-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Spara</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal för användarprofil -->
+    <div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Min Profil</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-2">Förnamn</label>
+                    <input type="text" id="profile-firstname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Efternamn</label>
+                    <input type="text" id="profile-lastname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">E-post</label>
+                    <input type="email" id="profile-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" disabled>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Telefon</label>
+                    <input type="text" id="profile-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Personnummer</label>
+                    <input type="text" id="profile-personalnumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="cancel-profile-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Avbryt</button>
+                <button id="save-profile-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Spara</button>
             </div>
         </div>
     </div>
@@ -463,248 +699,16 @@
     </div>
 
     <script>
-        // Firebase-konfiguration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDLezJUZMmeLllsdEPCUVkDBKwwR6OuoD8",
-            authDomain: "userbase-5061c.firebaseapp.com",
-            databaseURL: "https://userbase-5061c-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "userbase-5061c",
-            storageBucket: "userbase-5061c.firebasestorage.app",
-            messagingSenderId: "414829360217",
-            appId: "1:414829360217:web:21d0839ee0ccfbea336d48"
-        };
-        
-        // Initiera Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-        
         // Globala variabler
         let currentUser = null;
         let projects = [];
         let timeEntries = [];
-        let language = 'sv';
         let currentFilter = {
             year: 'all',
             month: 'all',
             ob: 'all'
         };
-        
-        // Översättningar
-        const translations = {
-            sv: {
-                login: "Logga in",
-                register: "Skapa konto",
-                workDate: "Datum",
-                project: "Projekt",
-                startTime: "Starttid",
-                endTime: "Sluttid",
-                breakTime: "Rast",
-                colleagues: "Kollegor",
-                notes: "Anteckningar",
-                saveHours: "Spara registrering",
-                myProjects: "Mina projekt",
-                newProject: "Nytt projekt",
-                obSummary: "OB-timmar sammanfattning",
-                baseSalary: "Baslön",
-                ob1: "OB 1",
-                ob2: "OB 2",
-                ob3: "OB 3",
-                ob4: "OB 4",
-                history: "Tidshistorik",
-                allYears: "Alla år",
-                allMonths: "Alla månader",
-                allOB: "Alla OB-typer",
-                date: "Datum",
-                hours: "Timmar",
-                details: "Detaljer",
-                actions: "Åtgärder",
-                statistics: "Statistik",
-                projectDistribution: "Fördelning per projekt",
-                weeklyHours: "Timmar per vecka",
-                cancel: "Avbryt",
-                save: "Spara",
-                projectName: "Projektnamn",
-                projectCode: "Projektkod",
-                projectDescription: "Beskrivning (valfritt)",
-                registerDetail: "Registreringsdetaljer",
-                close: "Stäng",
-                delete: "Ta bort",
-                edit: "Redigera",
-                totalHours: "Totalt antal timmar",
-                colleaguesPlaceholder: "Namn separerade med kommatecken",
-                editEntry: "Redigera Registrering",
-                exportPdf: "Exportera till PDF",
-                generatePdf: "Generera PDF",
-                pdfFilters: "PDF-filter",
-                allProjects: "Alla projekt"
-            },
-            en: {
-                login: "Login",
-                register: "Create account",
-                workDate: "Date",
-                project: "Project",
-                startTime: "Start time",
-                endTime: "End time",
-                breakTime: "Break",
-                colleagues: "Colleagues",
-                notes: "Notes",
-                saveHours: "Save entry",
-                myProjects: "My projects",
-                newProject: "New project",
-                obSummary: "OB Hours Summary",
-                baseSalary: "Base salary",
-                ob1: "OB 1",
-                ob2: "OB 2",
-                ob3: "OB 3",
-                ob4: "OB 4",
-                history: "Time History",
-                allYears: "All years",
-                allMonths: "All months",
-                allOB: "All OB",
-                date: "Date",
-                hours: "Hours",
-                details: "Details",
-                actions: "Actions",
-                statistics: "Statistics",
-                projectDistribution: "Project distribution",
-                weeklyHours: "Weekly hours",
-                cancel: "Cancel",
-                save: "Save",
-                projectName: "Project name",
-                projectCode: "Project code",
-                projectDescription: "Description (optional)",
-                registerDetail: "Entry Detail",
-                close: "Close",
-                delete: "Delete",
-                edit: "Edit",
-                totalHours: "Total hours",
-                colleaguesPlaceholder: "Names separated by commas",
-                editEntry: "Edit Entry",
-                exportPdf: "Export to PDF",
-                generatePdf: "Generate PDF",
-                pdfFilters: "PDF Filters",
-                allProjects: "All projects"
-            },
-            es: {
-                login: "Iniciar sesión",
-                register: "Crear cuenta",
-                workDate: "Fecha",
-                project: "Proyecto",
-                startTime: "Hora inicio",
-                endTime: "Hora fin",
-                breakTime: "Descanso",
-                colleagues: "Compañeros",
-                notes: "Notas",
-                saveHours: "Guardar registro",
-                myProjects: "Mis proyectos",
-                newProject: "Nuevo proyecto",
-                obSummary: "Resumen de horas OB",
-                baseSalary: "Sueldo base",
-                ob1: "OB 1",
-                ob2: "OB 2",
-                ob3: "OB 3",
-                ob4: "OB 4",
-                history: "Historial de horas",
-                allYears: "Todos los años",
-                allMonths: "Todos los meses",
-                allOB: "Todas las OB",
-                date: "Fecha",
-                hours: "Horas",
-                details: "Detalles",
-                actions: "Acciones",
-                statistics: "Estadísticas",
-                projectDistribution: "Distribución por proyecto",
-                weeklyHours: "Horas por semana",
-                cancel: "Cancelar",
-                save: "Guardar",
-                projectName: "Nombre del proyecto",
-                projectCode: "Código del proyecto",
-                projectDescription: "Descripción (opcional)",
-                registerDetail: "Detalle del Registro",
-                close: "Cerrar",
-                delete: "Eliminar",
-                edit: "Editar",
-                totalHours: "Horas totales",
-                colleaguesPlaceholder: "Nombres separados por comas",
-                editEntry: "Editar Registro",
-                exportPdf: "Exportar a PDF",
-                generatePdf: "Generar PDF",
-                pdfFilters: "Filtros PDF",
-                allProjects: "Todos los proyectos"
-            }
-        };
-        
-        // Funktion för att översätta gränssnittet
-        function translateUI() {
-            const lang = translations[language];
-            
-            // Uppdatera texter
-            document.getElementById('login-btn').textContent = lang.login;
-            document.getElementById('register-btn').textContent = lang.register;
-            document.querySelector('label[for="work-date"]').textContent = lang.workDate;
-            document.querySelector('label[for="project-select"]').textContent = lang.project;
-            document.querySelector('label[for="start-time"]').textContent = lang.startTime;
-            document.querySelector('label[for="end-time"]').textContent = lang.endTime;
-            document.querySelector('label[for="break-time"]').textContent = lang.breakTime;
-            document.querySelector('label[for="colleagues"]').textContent = lang.colleagues;
-            document.querySelector('label[for="notes"]').textContent = lang.notes;
-            document.getElementById('save-hours-btn').textContent = lang.saveHours;
-            document.querySelector('#app-content > div > div:nth-child(1) > div:nth-child(2) > div > h2').textContent = lang.myProjects;
-            document.getElementById('new-project-btn').innerHTML = `<i class="fas fa-plus mr-1"></i> ${lang.newProject}`;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(1) > h2').textContent = lang.obSummary;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > div:nth-child(2)').textContent = lang.baseSalary;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2)').textContent = lang.ob1;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(3) > div:nth-child(2)').textContent = lang.ob2;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(4) > div:nth-child(2)').textContent = lang.ob3;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(5) > div:nth-child(2)').textContent = lang.ob4;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > h2').textContent = lang.history;
-            document.querySelector('#project-modal > div > h3').textContent = lang.newProject;
-            document.querySelector('#project-modal > div > div:nth-child(2) > label').textContent = lang.projectName;
-            document.querySelector('#project-modal > div > div:nth-child(3) > label').textContent = lang.projectCode;
-            document.querySelector('#project-modal > div > div:nth-child(4) > label').textContent = lang.projectDescription;
-            document.getElementById('cancel-project-btn').textContent = lang.cancel;
-            document.getElementById('save-project-btn').textContent = lang.save;
-            document.querySelector('#detail-modal > div > h3').textContent = lang.registerDetail;
-            document.getElementById('close-detail-btn').textContent = lang.close;
-            document.getElementById('colleagues').placeholder = lang.colleaguesPlaceholder;
-            document.querySelector('#edit-modal > div > h3').textContent = lang.editEntry;
-            document.querySelector('#pdf-filter-modal > div > h3').textContent = lang.exportPdf;
-            document.getElementById('generate-pdf-btn').textContent = lang.generatePdf;
-            document.getElementById('cancel-pdf-btn').textContent = lang.cancel;
-            document.querySelector('#pdf-filter-modal label[for="pdf-start-date"]').textContent = "Från datum";
-            document.querySelector('#pdf-filter-modal label[for="pdf-end-date"]').textContent = "Till datum";
-            document.querySelector('#pdf-filter-modal label[for="pdf-project"]').textContent = lang.project;
-            document.querySelector('#pdf-filter-modal label[for="pdf-ob"]').textContent = "OB-typ";
-            document.querySelector('#pdf-filter-modal label[for="pdf-sort"]').textContent = "Sortera efter";
-            
-            // Uppdatera tabell
-            const headers = document.querySelectorAll('thead th');
-            if (headers.length >= 5) {
-                headers[0].textContent = lang.date;
-                headers[1].textContent = lang.project;
-                headers[2].textContent = lang.hours;
-                headers[3].textContent = lang.details;
-                headers[4].textContent = lang.actions;
-            }
-            
-            // Uppdatera statistik
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(3) > h2').textContent = lang.statistics;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(3) > div > div:nth-child(1) > h3').textContent = lang.projectDistribution;
-            document.querySelector('#app-content > div > div:nth-child(2) > div:nth-child(3) > div > div:nth-child(2) > h3').textContent = lang.weeklyHours;
-            
-            // Uppdatera filter
-            document.querySelector('#filter-ob option[value="all"]').textContent = lang.allOB;
-            document.querySelector('#filter-ob option[value="base"]').textContent = lang.baseSalary;
-            document.querySelector('#filter-ob option[value="ob1"]').textContent = lang.ob1;
-            document.querySelector('#filter-ob option[value="ob2"]').textContent = lang.ob2;
-            document.querySelector('#filter-ob option[value="ob3"]').textContent = lang.ob3;
-            document.querySelector('#filter-ob option[value="ob4"]').textContent = lang.ob4;
-            
-            // Uppdatera PDF-filter
-            document.querySelector('#pdf-ob option[value="all"]').textContent = lang.allOB;
-            document.querySelector('#pdf-project option[value="all"]').textContent = lang.allProjects;
-        }
+        let companySettings = {};
         
         // Funktion för att beräkna OB-timmar enligt specifika regler
         function calculateOBHours(start, end, breakHours) {
@@ -774,11 +778,92 @@
             return hours.toFixed(2);
         }
         
+        // Funktion för att ladda användarprofil
+        function loadUserProfile(userId) {
+            const profileRef = window.firebase.ref(window.firebase.database, `users/${userId}/profile`);
+            
+            window.firebase.onValue(profileRef, (snapshot) => {
+                const profileData = snapshot.val();
+                if (profileData) {
+                    document.getElementById('profile-firstname').value = profileData.firstname || '';
+                    document.getElementById('profile-lastname').value = profileData.lastname || '';
+                    document.getElementById('profile-email').value = profileData.email || '';
+                    document.getElementById('profile-phone').value = profileData.phone || '';
+                    document.getElementById('profile-personalnumber').value = profileData.personalnumber || '';
+                    
+                    // Uppdatera användarinformation i navbaren
+                    document.getElementById('user-name').textContent = `${profileData.firstname || ''} ${profileData.lastname || ''}`.trim() || profileData.email;
+                    document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profileData.firstname + ' ' + profileData.lastname || profileData.email)}&background=random`;
+                }
+            }, { onlyOnce: true });
+        }
+        
+        // Funktion för att spara användarprofil
+        function saveUserProfile(userId) {
+            const profileData = {
+                firstname: document.getElementById('profile-firstname').value,
+                lastname: document.getElementById('profile-lastname').value,
+                email: document.getElementById('profile-email').value,
+                phone: document.getElementById('profile-phone').value,
+                personalnumber: document.getElementById('profile-personalnumber').value
+            };
+            
+            const profileRef = window.firebase.ref(window.firebase.database, `users/${userId}/profile`);
+            window.firebase.set(profileRef, profileData)
+                .then(() => {
+                    alert('Profil sparad!');
+                    document.getElementById('profile-modal').classList.add('hidden');
+                })
+                .catch((error) => {
+                    console.error('Error saving profile:', error);
+                    alert('Ett fel uppstod vid sparande av profil.');
+                });
+        }
+        
+        // Funktion för att ladda företagsinställningar
+        function loadCompanySettings(userId) {
+            const settingsRef = window.firebase.ref(window.firebase.database, `users/${userId}/companySettings`);
+            
+            window.firebase.onValue(settingsRef, (snapshot) => {
+                const settingsData = snapshot.val();
+                if (settingsData) {
+                    companySettings = settingsData;
+                    document.getElementById('company-name').value = settingsData.name || '';
+                    document.getElementById('company-address').value = settingsData.address || '';
+                    document.getElementById('company-postal').value = settingsData.postal || '';
+                    document.getElementById('company-phone').value = settingsData.phone || '';
+                    document.getElementById('company-orgnr').value = settingsData.orgnr || '';
+                }
+            }, { onlyOnce: true });
+        }
+        
+        // Funktion för att spara företagsinställningar
+        function saveCompanySettings(userId) {
+            const settingsData = {
+                name: document.getElementById('company-name').value,
+                address: document.getElementById('company-address').value,
+                postal: document.getElementById('company-postal').value,
+                phone: document.getElementById('company-phone').value,
+                orgnr: document.getElementById('company-orgnr').value
+            };
+            
+            const settingsRef = window.firebase.ref(window.firebase.database, `users/${userId}/companySettings`);
+            window.firebase.set(settingsRef, settingsData)
+                .then(() => {
+                    alert('Företagsinställningar sparade!');
+                    companySettings = settingsData;
+                })
+                .catch((error) => {
+                    console.error('Error saving company settings:', error);
+                    alert('Ett fel uppstod vid sparande av företagsinställningar.');
+                });
+        }
+        
         // Funktion för att ladda projekt
         function loadProjects(userId) {
-            const projectsRef = database.ref(`users/${userId}/projects`);
+            const projectsRef = window.firebase.ref(window.firebase.database, `users/${userId}/projects`);
             
-            projectsRef.on('value', (snapshot) => {
+            window.firebase.onValue(projectsRef, (snapshot) => {
                 projects = [];
                 const projectsList = document.getElementById('projects-list');
                 projectsList.innerHTML = '';
@@ -845,12 +930,12 @@
         
         // Funktion för att ladda tidsregistreringar
         function loadTimeEntries(userId) {
-            const timeRef = database.ref(`users/${userId}/timeEntries`);
+            const timeRef = window.firebase.ref(window.firebase.database, `users/${userId}/timeEntries`);
             
-            timeRef.on('value', (snapshot) => {
+            window.firebase.onValue(timeRef, (snapshot) => {
                 timeEntries = [];
-                const historyBody = document.getElementById('hours-history');
-                historyBody.innerHTML = '';
+                const historyContainer = document.getElementById('hours-history');
+                historyContainer.innerHTML = '';
                 
                 // Rensa sammanfattning
                 document.getElementById('base-hours').textContent = '0.00';
@@ -870,14 +955,23 @@
                     ob4: 0
                 };
                 
+                // Gruppera poster per månad
+                const entriesByMonth = {};
+                
                 snapshot.forEach((childSnapshot) => {
                     const entry = {
                         id: childSnapshot.key,
                         ...childSnapshot.val()
                     };
                     
-                    // Applicera filter
-                    const entryDate = new Date(entry.startTime);
+                    timeEntries.push(entry);
+                    
+                    // Beräkna timmar
+                    const breakHours = parseFloat(entry.breakTime) || 0;
+                    const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                    
+                    // Använd det sparade datumfältet för filtrering (redan i lokal tid)
+                    const entryDate = new Date(entry.date);
                     const entryYear = entryDate.getFullYear();
                     const entryMonth = entryDate.getMonth() + 1;
                     
@@ -888,12 +982,6 @@
                     if (currentFilter.month !== 'all' && entryMonth !== parseInt(currentFilter.month)) {
                         return;
                     }
-                    
-                    timeEntries.push(entry);
-                    
-                    // Beräkna timmar
-                    const breakHours = parseFloat(entry.breakTime) || 0;
-                    const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
                     
                     // Filtrera efter OB-typ om aktiv
                     if (currentFilter.ob !== 'all') {
@@ -922,8 +1010,8 @@
                     }
                     projectStats[projectName] += obHours.total;
                     
-                    // Uppdatera veckostatistik (justerad för lokal tid)
-                    const weekStart = getWeekStartDate(new Date(entry.startTime));
+                    // Uppdatera veckostatistik
+                    const weekStart = getWeekStartDate(new Date(entry.date));
                     const weekKey = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, '0')}-${String(weekStart.getDate()).padStart(2, '0')}`;
                     
                     if (!weekStats[weekKey]) {
@@ -931,30 +1019,12 @@
                     }
                     weekStats[weekKey] += obHours.total;
                     
-                    // Formatera datum
-                    const dateStr = new Date(entry.startTime).toLocaleDateString();
-                    
-                    // Lägg till i tabellen
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="px-4 py-2 whitespace-nowrap">${dateStr}</td>
-                        <td class="px-4 py-2">${projectName}</td>
-                        <td class="px-4 py-2">${formatHours(obHours.total)}</td>
-                        <td class="px-4 py-2">
-                            <button class="view-detail text-primary hover:underline" data-id="${entry.id}">
-                                <i class="fas fa-eye mr-1"></i> ${translations[language].details}
-                            </button>
-                        </td>
-                        <td class="px-4 py-2 whitespace-nowrap">
-                            <button class="text-blue-500 hover:text-blue-700 mr-2 edit-entry" data-id="${entry.id}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-500 hover:text-red-700 delete-entry" data-id="${entry.id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                    historyBody.appendChild(row);
+                    // Gruppera efter månad med det sparade datumfältet
+                    const monthKey = `${entryYear}-${String(entryMonth).padStart(2, '0')}`;
+                    if (!entriesByMonth[monthKey]) {
+                        entriesByMonth[monthKey] = [];
+                    }
+                    entriesByMonth[monthKey].push({...entry, obHours});
                 });
                 
                 // Uppdatera OB-sammanfattning
@@ -963,6 +1033,92 @@
                 document.getElementById('ob2-hours').textContent = formatHours(obSummary.ob2);
                 document.getElementById('ob3-hours').textContent = formatHours(obSummary.ob3);
                 document.getElementById('ob4-hours').textContent = formatHours(obSummary.ob4);
+                
+                // Skapa månadsgrupper
+                Object.keys(entriesByMonth).sort().reverse().forEach(monthKey => {
+                    const entries = entriesByMonth[monthKey];
+                    const [year, month] = monthKey.split('-');
+                    const monthNames = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
+                    const monthName = monthNames[parseInt(month) - 1];
+                    
+                    const monthGroup = document.createElement('div');
+                    monthGroup.className = 'month-group';
+                    
+                    const monthHeader = document.createElement('div');
+                    monthHeader.className = 'month-header';
+                    monthHeader.dataset.month = monthKey;
+                    monthHeader.innerHTML = `
+                        <h3 class="font-medium">${monthName} ${year}</h3>
+                        <span class="chevron"><i class="fas fa-chevron-down"></i></span>
+                    `;
+                    
+                    const monthContent = document.createElement('div');
+                    monthContent.className = 'month-content collapsed';
+                    
+                    const table = document.createElement('table');
+                    table.className = 'min-w-full divide-y divide-gray-200';
+                    table.innerHTML = `
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projekt</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timmar</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detaljer</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Åtgärder</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${entries.map(entry => {
+                                const dateStr = new Date(entry.date).toLocaleDateString('sv-SE');
+                                const projectName = entry.projectName || 'Inget projekt';
+                                
+                                return `
+                                    <tr>
+                                        <td class="px-4 py-2 whitespace-nowrap">${dateStr}</td>
+                                        <td class="px-4 py-2">${projectName}</td>
+                                        <td class="px-4 py-2">${formatHours(entry.obHours.total)}</td>
+                                        <td class="px-4 py-2">
+                                            <button class="view-detail text-primary hover:underline" data-id="${entry.id}">
+                                                <i class="fas fa-eye mr-1"></i> Detaljer
+                                            </button>
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-2 edit-entry" data-id="${entry.id}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-500 hover:text-red-700 delete-entry" data-id="${entry.id}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    `;
+                    
+                    monthContent.appendChild(table);
+                    monthGroup.appendChild(monthHeader);
+                    monthGroup.appendChild(monthContent);
+                    historyContainer.appendChild(monthGroup);
+                });
+                
+                // Lägg till event listeners för månadsgrupper
+                document.querySelectorAll('.month-header').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const content = header.nextElementSibling;
+                        const chevron = header.querySelector('.chevron i');
+                        
+                        if (content.classList.contains('collapsed')) {
+                            content.classList.remove('collapsed');
+                            content.classList.add('expanded');
+                            chevron.classList.add('rotated');
+                        } else {
+                            content.classList.remove('expanded');
+                            content.classList.add('collapsed');
+                            chevron.classList.remove('rotated');
+                        }
+                    });
+                });
                 
                 // Uppdatera diagram
                 updateCharts(projectStats, weekStats);
@@ -1031,7 +1187,7 @@
                         },
                         title: {
                             display: true,
-                            text: translations[language].projectDistribution
+                            text: 'Fördelning per projekt'
                         }
                     }
                 }
@@ -1057,7 +1213,7 @@
                 data: {
                     labels: weekLabels,
                     datasets: [{
-                        label: translations[language].weeklyHours,
+                        label: 'Timmar per vecka',
                         data: sortedWeeks.map(week => weekStats[week]),
                         backgroundColor: '#3b82f6'
                     }]
@@ -1096,8 +1252,8 @@
                 createdAt: new Date().toISOString()
             };
             
-            const projectsRef = database.ref(`users/${currentUser.uid}/projects`);
-            projectsRef.push(newProject);
+            const projectsRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/projects`);
+            window.firebase.push(projectsRef, newProject);
             
             // Stäng modal och rensa fält
             document.getElementById('project-modal').classList.add('hidden');
@@ -1109,8 +1265,8 @@
         // Funktion för att ta bort projekt
         function deleteProject(projectId) {
             if (confirm('Är du säker på att du vill ta bort detta projekt? Det går inte att ångra.')) {
-                const projectRef = database.ref(`users/${currentUser.uid}/projects/${projectId}`);
-                projectRef.remove();
+                const projectRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/projects/${projectId}`);
+                window.firebase.remove(projectRef);
             }
         }
         
@@ -1133,7 +1289,7 @@
             const project = projects.find(p => p.id === projectId);
             const projectName = project ? project.name : '';
             
-            // Skapa fullständiga datumobjekt
+            // Skapa fullständiga datumobjekt med korrekt hantering av tidszoner
             const startDateTime = new Date(`${date}T${startTime}`);
             const endDateTime = new Date(`${date}T${endTime}`);
             
@@ -1143,7 +1299,7 @@
             }
             
             const newEntry = {
-                date,
+                date,  // Spara det lokala datumet separat för korrekt gruppering
                 projectId,
                 projectName,
                 startTime: startDateTime.toISOString(),
@@ -1154,8 +1310,8 @@
                 createdAt: new Date().toISOString()
             };
             
-            const timeRef = database.ref(`users/${currentUser.uid}/timeEntries`);
-            timeRef.push(newEntry);
+            const timeRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/timeEntries`);
+            window.firebase.push(timeRef, newEntry);
             
             // Rensa formulär
             document.getElementById('start-time').value = '01:30';
@@ -1174,23 +1330,22 @@
             const breakHours = parseFloat(entry.breakTime) || 0;
             const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
             
-            const lang = translations[language];
             const detailContent = document.getElementById('detail-content');
             detailContent.innerHTML = `
                 <div class="grid grid-cols-2 gap-2">
-                    <div class="font-medium">${lang.date}:</div>
-                    <div>${new Date(entry.startTime).toLocaleDateString()}</div>
+                    <div class="font-medium">Datum:</div>
+                    <div>${new Date(entry.date).toLocaleDateString('sv-SE')}</div>
                     
-                    <div class="font-medium">${lang.project}:</div>
+                    <div class="font-medium">Projekt:</div>
                     <div>${entry.projectName || 'Inget projekt'}</div>
                     
                     <div class="font-medium">Tid:</div>
-                    <div>${new Date(entry.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${new Date(entry.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    <div>${new Date(entry.startTime).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})} - ${new Date(entry.endTime).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</div>
                     
-                    <div class="font-medium">${lang.totalHours}:</div>
+                    <div class="font-medium">Totalt antal timmar:</div>
                     <div>${formatHours(obHours.total)} h</div>
                     
-                    <div class="font-medium">${lang.breakTime}:</div>
+                    <div class="font-medium">Rast:</div>
                     <div>${entry.breakTime} h</div>
                 </div>
                 
@@ -1198,7 +1353,7 @@
                     <div class="font-medium">OB-uppdelning:</div>
                     <div class="grid grid-cols-5 gap-2 mt-2">
                         <div class="ob-base p-2 rounded text-center">
-                            <div class="font-bold">${lang.baseSalary}</div>
+                            <div class="font-bold">Baslön</div>
                             <div>${formatHours(obHours.breakdown.base)} h</div>
                         </div>
                         <div class="ob-1 p-2 rounded text-center">
@@ -1222,14 +1377,14 @@
                 
                 ${entry.colleagues ? `
                 <div class="pt-3">
-                    <div class="font-medium">${lang.colleagues}:</div>
+                    <div class="font-medium">Kollegor:</div>
                     <div>${entry.colleagues}</div>
                 </div>
                 ` : ''}
                 
                 ${entry.notes ? `
                 <div class="pt-3">
-                    <div class="font-medium">${lang.notes}:</div>
+                    <div class="font-medium">Anteckningar:</div>
                     <div>${entry.notes}</div>
                 </div>
                 ` : ''}
@@ -1304,8 +1459,8 @@
                 notes
             };
             
-            const entryRef = database.ref(`users/${currentUser.uid}/timeEntries/${entryId}`);
-            entryRef.update(updatedEntry);
+            const entryRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/timeEntries/${entryId}`);
+            window.firebase.update(entryRef, updatedEntry);
             
             // Stäng modal
             document.getElementById('edit-modal').classList.add('hidden');
@@ -1314,8 +1469,8 @@
         // Funktion för att ta bort tidsregistrering
         function deleteTimeEntry(entryId) {
             if (confirm('Är du säker på att du vill ta bort denna registrering? Det går inte att ångra.')) {
-                const entryRef = database.ref(`users/${currentUser.uid}/timeEntries/${entryId}`);
-                entryRef.remove();
+                const entryRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/timeEntries/${entryId}`);
+                window.firebase.remove(entryRef);
             }
         }
         
@@ -1342,9 +1497,10 @@
                 const obType = document.getElementById('pdf-ob').value;
                 const sortBy = document.getElementById('pdf-sort').value;
                 
-                // Filtrera registreringar
+                // Filtrera registreringar baserat på det sparade datumfältet (lokal tid)
                 let filteredEntries = timeEntries.filter(entry => {
-                    const entryDate = new Date(entry.startTime).toISOString().split('T')[0];
+                    // Använd det sparade datumfältet för korrekt filtrering
+                    const entryDate = entry.date;
                     
                     // Datumfilter
                     if (startDate && entryDate < startDate) return false;
@@ -1372,8 +1528,8 @@
                 
                 // Sortera registreringar
                 filteredEntries.sort((a, b) => {
-                    const aDate = new Date(a.startTime);
-                    const bDate = new Date(b.startTime);
+                    const aDate = new Date(a.date);
+                    const bDate = new Date(b.date);
                     
                     switch(sortBy) {
                         case 'date': return aDate - bDate;
@@ -1411,7 +1567,7 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                // Sidhuvud
+                // Sidhuvud med företagsinformation
                 doc.setFontSize(16);
                 doc.setTextColor(40);
                 doc.setFont("helvetica", "bold");
@@ -1419,15 +1575,25 @@
                 
                 doc.setFontSize(10);
                 doc.setFont("helvetica", "normal");
-                doc.text('Köpmangatan 5, plan 10', 20, 25);
-                doc.text('151 71 Södertälje', 20, 30);
-                doc.text('Tel 079-079 00 45', 20, 35);
-                doc.text('Organisationsnummer: 559096-5983', 20, 40);
+                
+                // Företagsinformation från inställningar
+                if (companySettings.address) {
+                    doc.text(companySettings.address, 20, 25);
+                }
+                if (companySettings.postal) {
+                    doc.text(companySettings.postal, 20, 30);
+                }
+                if (companySettings.phone) {
+                    doc.text(`Tel ${companySettings.phone}`, 20, 35);
+                }
+                if (companySettings.orgnr) {
+                    doc.text(`Organisationsnummer: ${companySettings.orgnr}`, 20, 40);
+                }
                 
                 // Användarinformation
                 const userName = document.getElementById('user-name').textContent;
                 doc.text(`Användare: ${userName}`, 140, 25);
-                doc.text(`Exporterad: ${new Date().toLocaleDateString()}`, 140, 30);
+                doc.text(`Exporterad: ${new Date().toLocaleDateString('sv-SE')}`, 140, 30);
                 
                 // Sammanfattningstabell
                 const summaryHeaders = [['Timtyp', 'Timmar']];
@@ -1464,7 +1630,7 @@
                     const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
                     
                     return [
-                        new Date(entry.startTime).toLocaleDateString(),
+                        new Date(entry.date).toLocaleDateString('sv-SE'),
                         entry.projectName || 'Inget projekt',
                         formatHours(obHours.total),
                         formatHours(obHours.breakdown.base),
@@ -1521,37 +1687,189 @@
             }
         }
         
-        // Funktion för att exportera till JSON
-        function exportToJSON() {
-            const data = timeEntries.map(entry => {
+        // Funktion för att exportera till Word
+        function exportToWord() {
+            // Hämta filtervärden
+            const startDate = document.getElementById('pdf-start-date').value;
+            const endDate = document.getElementById('pdf-end-date').value;
+            const projectId = document.getElementById('pdf-project').value;
+            const obType = document.getElementById('pdf-ob').value;
+            const sortBy = document.getElementById('pdf-sort').value;
+            
+            // Filtrera registreringar baserat på det sparade datumfältet (lokal tid)
+            let filteredEntries = timeEntries.filter(entry => {
+                // Använd det sparade datumfältet för korrekt filtrering
+                const entryDate = entry.date;
+                
+                // Datumfilter
+                if (startDate && entryDate < startDate) return false;
+                if (endDate && entryDate > endDate) return false;
+                
+                // Projektfilter
+                if (projectId !== 'all' && entry.projectId !== projectId) return false;
+                
+                // OB-filter
+                if (obType !== 'all') {
+                    const breakHours = parseFloat(entry.breakTime) || 0;
+                    const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                    
+                    switch(obType) {
+                        case 'base': if (obHours.breakdown.base <= 0) return false; break;
+                        case 'ob1': if (obHours.breakdown.ob1 <= 0) return false; break;
+                        case 'ob2': if (obHours.breakdown.ob2 <= 0) return false; break;
+                        case 'ob3': if (obHours.breakdown.ob3 <= 0) return false; break;
+                        case 'ob4': if (obHours.breakdown.ob4 <= 0) return false; break;
+                    }
+                }
+                
+                return true;
+            });
+            
+            // Sortera registreringar
+            filteredEntries.sort((a, b) => {
+                const aDate = new Date(a.date);
+                const bDate = new Date(b.date);
+                
+                switch(sortBy) {
+                    case 'date': return aDate - bDate;
+                    case 'project': return a.projectName.localeCompare(b.projectName);
+                    case 'hours': 
+                        const aHours = calculateOBHours(a.startTime, a.endTime, parseFloat(a.breakTime) || 0).total;
+                        const bHours = calculateOBHours(b.startTime, b.endTime, parseFloat(b.breakTime) || 0).total;
+                        return bHours - aHours;
+                    default: return aDate - bDate;
+                }
+            });
+            
+            // Beräkna sammanfattning
+            let summary = {
+                base: 0,
+                ob1: 0,
+                ob2: 0,
+                ob3: 0,
+                ob4: 0,
+                total: 0
+            };
+            
+            filteredEntries.forEach(entry => {
+                const breakHours = parseFloat(entry.breakTime) || 0;
+                const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                summary.base += obHours.breakdown.base;
+                summary.ob1 += obHours.breakdown.ob1;
+                summary.ob2 += obHours.breakdown.ob2;
+                summary.ob3 += obHours.breakdown.ob3;
+                summary.ob4 += obHours.breakdown.ob4;
+                summary.total += obHours.total;
+            });
+            
+            // Skapa Word-innehåll
+            let wordContent = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta charset="utf-8">
+                <title>Tidrapport</title>
+                <style>
+                    body { font-family: Arial, sans-serif; }
+                    h1 { color: #2c5282; }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #3b82f6; color: white; }
+                    .summary-table { margin-bottom: 20px; }
+                    .detail-table { margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <h1 style="text-align: center;">Tidrapport</h1>
+                
+                <div style="margin-bottom: 20px;">
+                    <p><strong>Företag:</strong> ${companySettings.name || ''}</p>
+                    <p><strong>Adress:</strong> ${companySettings.address || ''}, ${companySettings.postal || ''}</p>
+                    <p><strong>Telefon:</strong> ${companySettings.phone || ''}</p>
+                    <p><strong>Organisationsnummer:</strong> ${companySettings.orgnr || ''}</p>
+                    <p><strong>Användare:</strong> ${document.getElementById('user-name').textContent}</p>
+                    <p><strong>Exporterad:</strong> ${new Date().toLocaleDateString('sv-SE')}</p>
+                </div>
+                
+                <h2>Sammanfattning</h2>
+                <table class="summary-table">
+                    <tr>
+                        <th>Timtyp</th>
+                        <th>Timmar</th>
+                    </tr>
+                    <tr>
+                        <td>Baslön</td>
+                        <td>${formatHours(summary.base)}</td>
+                    </tr>
+                    <tr>
+                        <td>OB 1</td>
+                        <td>${formatHours(summary.ob1)}</td>
+                    </tr>
+                    <tr>
+                        <td>OB 2</td>
+                        <td>${formatHours(summary.ob2)}</td>
+                    </tr>
+                    <tr>
+                        <td>OB 3</td>
+                        <td>${formatHours(summary.ob3)}</td>
+                    </tr>
+                    <tr>
+                        <td>OB 4</td>
+                        <td>${formatHours(summary.ob4)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TOTALT</strong></td>
+                        <td><strong>${formatHours(summary.total)}</strong></td>
+                    </tr>
+                </table>
+                
+                <h2>Detaljerad lista</h2>
+                <table class="detail-table">
+                    <tr>
+                        <th>Datum</th>
+                        <th>Projekt</th>
+                        <th>Totalt</th>
+                        <th>Baslön</th>
+                        <th>OB 1</th>
+                        <th>OB 2</th>
+                        <th>OB 3</th>
+                        <th>OB 4</th>
+                    </tr>
+            `;
+            
+            filteredEntries.forEach(entry => {
                 const breakHours = parseFloat(entry.breakTime) || 0;
                 const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
                 
-                return {
-                    id: entry.id,
-                    date: entry.date,
-                    project: entry.projectName,
-                    startTime: new Date(entry.startTime).toLocaleTimeString(),
-                    endTime: new Date(entry.endTime).toLocaleTimeString(),
-                    breakTime: entry.breakTime,
-                    colleagues: entry.colleagues,
-                    notes: entry.notes,
-                    totalHours: obHours.total,
-                    baseHours: obHours.breakdown.base,
-                    ob1Hours: obHours.breakdown.ob1,
-                    ob2Hours: obHours.breakdown.ob2,
-                    ob3Hours: obHours.breakdown.ob3,
-                    ob4Hours: obHours.breakdown.ob4
-                };
+                wordContent += `
+                    <tr>
+                        <td>${new Date(entry.date).toLocaleDateString('sv-SE')}</td>
+                        <td>${entry.projectName || 'Inget projekt'}</td>
+                        <td>${formatHours(obHours.total)}</td>
+                        <td>${formatHours(obHours.breakdown.base)}</td>
+                        <td>${formatHours(obHours.breakdown.ob1)}</td>
+                        <td>${formatHours(obHours.breakdown.ob2)}</td>
+                        <td>${formatHours(obHours.breakdown.ob3)}</td>
+                        <td>${formatHours(obHours.breakdown.ob4)}</td>
+                    </tr>
+                `;
             });
             
-            const jsonStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
+            wordContent += `
+                </table>
+                <p style="margin-top: 30px; font-size: 12px; text-align: center;">
+                    Genererad av Tidbok OB - Timregistreringssystem
+                </p>
+            </body>
+            </html>
+            `;
+            
+            // Skapa och ladda ner Word-dokument
+            const blob = new Blob([wordContent], { type: 'application/msword' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'tidshistorik.json';
+            a.download = `${document.getElementById('user-name').textContent.replace(/\s+/g, '_')}_tidrapport.doc`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1590,7 +1908,7 @@
             });
             
             // Initiera Firebase Auth state observer
-            auth.onAuthStateChanged((user) => {
+            window.firebase.onAuthStateChanged(window.firebase.auth, (user) => {
                 if (user) {
                     // Användare inloggad
                     currentUser = user;
@@ -1598,11 +1916,9 @@
                     document.getElementById('app-content').classList.remove('hidden');
                     document.getElementById('user-info').classList.remove('hidden');
                     
-                    // Uppdatera användarinformation
-                    document.getElementById('user-name').textContent = user.displayName || user.email;
-                    document.getElementById('user-avatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`;
-                    
                     // Ladda användardata
+                    loadUserProfile(user.uid);
+                    loadCompanySettings(user.uid);
                     loadProjects(user.uid);
                     loadTimeEntries(user.uid);
                 } else {
@@ -1614,31 +1930,89 @@
                 }
             });
             
-            // Event listeners
+            // Event listeners för autentisering
+            document.getElementById('login-tab-btn').addEventListener('click', () => {
+                document.getElementById('login-tab-btn').classList.add('active');
+                document.getElementById('register-tab-btn').classList.remove('active');
+                document.getElementById('login-tab').classList.add('active');
+                document.getElementById('register-tab').classList.remove('active');
+            });
+            
+            document.getElementById('register-tab-btn').addEventListener('click', () => {
+                document.getElementById('register-tab-btn').classList.add('active');
+                document.getElementById('login-tab-btn').classList.remove('active');
+                document.getElementById('register-tab').classList.add('active');
+                document.getElementById('login-tab').classList.remove('active');
+            });
+            
             document.getElementById('login-btn').addEventListener('click', () => {
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 const authMessage = document.getElementById('auth-message');
                 
-                auth.signInWithEmailAndPassword(email, password)
+                window.firebase.signInWithEmailAndPassword(window.firebase.auth, email, password)
                     .catch((error) => {
                         authMessage.textContent = error.message;
                     });
             });
             
             document.getElementById('register-btn').addEventListener('click', () => {
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
+                const email = document.getElementById('reg-email').value;
+                const password = document.getElementById('reg-password').value;
+                const firstname = document.getElementById('reg-firstname').value;
+                const lastname = document.getElementById('reg-lastname').value;
+                const phone = document.getElementById('reg-phone').value;
+                const personalnumber = document.getElementById('reg-personalnumber').value;
                 const authMessage = document.getElementById('auth-message');
                 
-                auth.createUserWithEmailAndPassword(email, password)
+                window.firebase.createUserWithEmailAndPassword(window.firebase.auth, email, password)
+                    .then((userCredential) => {
+                        // Spara användarprofil
+                        const user = userCredential.user;
+                        const profileData = {
+                            firstname,
+                            lastname,
+                            email,
+                            phone,
+                            personalnumber
+                        };
+                        
+                        const profileRef = window.firebase.ref(window.firebase.database, `users/${user.uid}/profile`);
+                        return window.firebase.set(profileRef, profileData);
+                    })
                     .catch((error) => {
                         authMessage.textContent = error.message;
                     });
             });
 
             document.getElementById('logout-btn').addEventListener('click', () => {
-                auth.signOut();
+                window.firebase.signOut(window.firebase.auth);
+            });
+            
+            document.getElementById('profile-btn').addEventListener('click', () => {
+                document.getElementById('profile-modal').classList.remove('hidden');
+            });
+            
+            document.getElementById('cancel-profile-btn').addEventListener('click', () => {
+                document.getElementById('profile-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('save-profile-btn').addEventListener('click', () => {
+                if (currentUser) {
+                    saveUserProfile(currentUser.uid);
+                }
+            });
+            
+            document.getElementById('settings-toggle').addEventListener('click', () => {
+                const settingsPanel = document.getElementById('settings-panel');
+                settingsPanel.classList.toggle('hidden');
+            });
+            
+            document.getElementById('company-settings-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (currentUser) {
+                    saveCompanySettings(currentUser.uid);
+                }
             });
             
             document.getElementById('new-project-btn').addEventListener('click', () => {
@@ -1663,33 +2037,32 @@
             
             document.getElementById('export-pdf').addEventListener('click', exportToPDF);
             
+            document.getElementById('export-word').addEventListener('click', () => {
+                exportToPDF(); // Öppna filtermodalen först
+                // Word-export kommer att hanteras separat efter att användaren valt filter
+                document.getElementById('generate-pdf-btn').addEventListener('click', exportToWord, { once: true });
+            });
+            
             document.getElementById('generate-pdf-btn').addEventListener('click', generatePDF);
             
             document.getElementById('cancel-pdf-btn').addEventListener('click', () => {
                 document.getElementById('pdf-filter-modal').classList.add('hidden');
             });
             
-            document.getElementById('export-json').addEventListener('click', exportToJSON);
-            
-            document.getElementById('language-select').addEventListener('change', (e) => {
-                language = e.target.value;
-                translateUI();
-            });
-            
             // Filter
             document.getElementById('filter-year').addEventListener('change', (e) => {
                 currentFilter.year = e.target.value;
-                loadTimeEntries(currentUser.uid);
+                if (currentUser) loadTimeEntries(currentUser.uid);
             });
             
             document.getElementById('filter-month').addEventListener('change', (e) => {
                 currentFilter.month = e.target.value;
-                loadTimeEntries(currentUser.uid);
+                if (currentUser) loadTimeEntries(currentUser.uid);
             });
             
             document.getElementById('filter-ob').addEventListener('change', (e) => {
                 currentFilter.ob = e.target.value;
-                loadTimeEntries(currentUser.uid);
+                if (currentUser) loadTimeEntries(currentUser.uid);
             });
             
             // Redigering
@@ -1722,9 +2095,6 @@
                 const week1 = new Date(date.getFullYear(), 0, 4);
                 return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
             };
-            
-            // Översätt gränssnittet initialt
-            translateUI();
         });
     </script>
 </body>
