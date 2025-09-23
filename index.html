@@ -1049,7 +1049,10 @@
         function loadTimeEntries(userId) {
             const timeRef = window.firebase.ref(window.firebase.database, `users/${userId}/timeEntries`);
             
-            window.firebase.onValue(timeRef, (snapshot) => {
+			window.firebase.onValue(timeRef, (snapshot) => {
+				// Depuración: cuántos registros llegan
+				console.log("Entradas crudas:", snapshot.size || snapshot.numChildren?.());
+			
                 timeEntries = [];
                 const historyContainer = document.getElementById('hours-history');
                 historyContainer.innerHTML = '';
