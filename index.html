@@ -118,19 +118,21 @@
         
         .form-control {
             width: 100%;
-            padding: 0.5rem 0.75rem;
+            padding: 0.75rem;
             border: 1px solid #d1d5db;
             border-radius: 0.375rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            font-size: 16px; /* Prevenir zoom en iOS */
         }
         
         .btn-primary {
             background-color: #3b82f6;
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1rem;
             border-radius: 0.375rem;
             font-weight: 500;
             cursor: pointer;
+            font-size: 16px; /* Prevenir zoom en iOS */
         }
         
         .btn-primary:hover {
@@ -138,10 +140,11 @@
         }
         
         .tab-button {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem;
             border: 1px solid #d1d5db;
             background-color: #f9fafb;
             cursor: pointer;
+            font-size: 16px; /* Prevenir zoom en iOS */
         }
         
         .tab-button.active {
@@ -193,6 +196,95 @@
         .chevron.rotated {
             transform: rotate(180deg);
         }
+        
+        /* Estilos específicos para móviles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .mobile-menu.active {
+            display: flex;
+        }
+        
+        .mobile-menu-item {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            color: #6b7280;
+        }
+        
+        .mobile-menu-item.active {
+            color: #3b82f6;
+        }
+        
+        .mobile-menu-item i {
+            display: block;
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .mobile-menu-item span {
+            font-size: 0.75rem;
+        }
+        
+        .section {
+            display: none;
+            padding-bottom: 80px; /* Espacio para el menú móvil */
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Ajustes para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .desktop-only {
+                display: none;
+            }
+            
+            .mobile-only {
+                display: block;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .ob-card {
+                padding: 0.75rem;
+            }
+            
+            .ob-card .text-2xl {
+                font-size: 1.25rem;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .filter-bar select {
+                width: 100%;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-only {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -235,7 +327,7 @@
         <div id="settings-panel" class="settings-panel bg-gray-100 border-b hidden">
             <div class="container mx-auto px-4 py-4">
                 <h3 class="text-lg font-semibold mb-4">Företagsinställningar</h3>
-                <form id="company-settings-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form id="company-settings-form" class="grid grid-cols-1 gap-4">
                     <div class="form-group">
                         <label for="company-name" class="form-label">Företagsnamn (valfritt)</label>
                         <input type="text" id="company-name" class="form-control" placeholder="Geomira Mätkonslut AB">
@@ -256,8 +348,8 @@
                         <label for="company-orgnr" class="form-label">Organisationsnummer</label>
                         <input type="text" id="company-orgnr" class="form-control" placeholder="559096-5983">
                     </div>
-                    <div class="form-group md:col-span-2">
-                        <button type="submit" class="btn-primary">Spara inställningar</button>
+                    <div class="form-group">
+                        <button type="submit" class="btn-primary w-full">Spara inställningar</button>
                     </div>
                 </form>
             </div>
@@ -281,16 +373,16 @@
                 <div id="login-tab" class="auth-tab active">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="email">E-post</label>
-                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="email" id="email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="password">Lösenord</label>
-                        <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="password" id="password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-6">
-                        <button id="login-btn" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
+                        <button id="login-btn" class="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-blue-600 transition">
                             Logga in
                         </button>
                     </div>
@@ -300,36 +392,36 @@
                 <div id="register-tab" class="auth-tab">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-email">E-post</label>
-                        <input type="email" id="reg-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="email" id="reg-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-password">Lösenord</label>
-                        <input type="password" id="reg-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="password" id="reg-password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-firstname">Förnamn</label>
-                        <input type="text" id="reg-firstname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="text" id="reg-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-lastname">Efternamn</label>
-                        <input type="text" id="reg-lastname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="text" id="reg-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-phone">Telefon</label>
-                        <input type="text" id="reg-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="text" id="reg-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-6">
                         <label class="block text-gray-700 mb-2" for="reg-personalnumber">Personnummer</label>
-                        <input type="text" id="reg-personalnumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="text" id="reg-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     
                     <div class="mb-6">
-                        <button id="register-btn" class="w-full bg-secondary text-white py-2 px-4 rounded-md hover:bg-green-500 transition">
+                        <button id="register-btn" class="w-full bg-secondary text-white py-3 px-4 rounded-md hover:bg-green-500 transition">
                             Skapa konto
                         </button>
                     </div>
@@ -340,134 +432,154 @@
 
             <!-- Appens huvudinnehåll (dold initialt) -->
             <div id="app-content" class="hidden fade-in">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Vänstersektion: Timregistrering och projekt -->
-                    <div class="lg:col-span-1 space-y-6">
-                        <!-- Kort: Registrera timmar -->
-                        <div class="bg-white rounded-xl shadow-md p-6">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4">Registrera timmar</h2>
-                            
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Datum</label>
-                                    <input type="date" id="work-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Projekt</label>
-                                    <select id="project-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="">Välj projekt</option>
-                                    </select>
-                                    <button id="new-project-btn" class="mt-2 text-sm text-primary hover:underline">
-                                        <i class="fas fa-plus mr-1"></i> Nytt projekt
-                                    </button>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-gray-700 mb-2">Starttid</label>
-                                        <input type="time" id="start-time" value="01:30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-700 mb-2">Sluttid</label>
-                                        <input type="time" id="end-time" value="10:00" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Rast</label>
-                                    <select id="break-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="0.0">0.0</option>
-                                        <option value="0.5" selected>En halvtimme</option>
-                                        <option value="1">1 timme</option>
-                                        <option value="2">2 timmar</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Kollegor</label>
-                                    <input type="text" id="colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Anteckningar</label>
-                                    <textarea id="notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
-                                </div>
-                                
-                                <button id="save-hours-btn" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
-                                    Spara registrering
-                                </button>
-                            </div>
-                        </div>
+                <!-- Menú móvil -->
+                <div id="mobile-menu" class="mobile-menu">
+                    <div class="mobile-menu-item active" data-section="register">
+                        <i class="fas fa-clock"></i>
+                        <span>Registrera</span>
+                    </div>
+                    <div class="mobile-menu-item" data-section="projects">
+                        <i class="fas fa-folder"></i>
+                        <span>Projekt</span>
+                    </div>
+                    <div class="mobile-menu-item" data-section="history">
+                        <i class="fas fa-history"></i>
+                        <span>Historik</span>
+                    </div>
+                    <div class="mobile-menu-item" data-section="stats">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Statistik</span>
+                    </div>
+                </div>
+                
+                <!-- Sección: Registrera timmar -->
+                <div id="register-section" class="section active">
+                    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Registrera timmar</h2>
                         
-                        <!-- Kort: Projekt hantering -->
-                        <div class="bg-white rounded-xl shadow-md p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-bold text-gray-800">Mina projekt</h2>
-                                <button id="create-project-btn" class="bg-primary text-white p-2 rounded-full hover:bg-blue-600 transition">
-                                    <i class="fas fa-plus"></i>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">Datum</label>
+                                <input type="date" id="work-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">Projekt</label>
+                                <select id="project-select" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">Välj projekt</option>
+                                </select>
+                                <button id="new-project-btn" class="mt-2 text-sm text-primary hover:underline">
+                                    <i class="fas fa-plus mr-1"></i> Nytt projekt
                                 </button>
                             </div>
                             
-                            <div id="projects-list" class="space-y-2 max-h-60 overflow-y-auto scrollbar-hide">
-                                <!-- Projekt kommer att laddas här -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Starttid</label>
+                                    <input type="time" id="start-time" value="01:30" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Sluttid</label>
+                                    <input type="time" id="end-time" value="10:00" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
                             </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">Rast</label>
+                                <select id="break-time" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="0.0">0.0</option>
+                                    <option value="0.5" selected>En halvtimme</option>
+                                    <option value="1">1 timme</option>
+                                    <option value="2">2 timmar</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">Kollegor</label>
+                                <input type="text" id="colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 mb-2">Anteckningar</label>
+                                <textarea id="notes" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                            </div>
+                            
+                            <button id="save-hours-btn" class="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-blue-600 transition">
+                                Spara registrering
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Högersektion: Historik och statistik -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <!-- Kort: OB-timmar sammanfattning -->
-                        <div class="bg-white rounded-xl shadow-md p-6">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4">OB-timmar sammanfattning</h2>
-                            
-                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                <div class="ob-base p-4 rounded-lg text-center">
-                                    <div class="text-2xl font-bold" id="base-hours">0.00</div>
-                                    <div class="text-sm">Baslön</div>
-                                </div>
-                                <div class="ob-1 p-4 rounded-lg text-center">
-                                    <div class="text-2xl font-bold" id="ob1-hours">0.00</div>
-                                    <div class="text-sm">OB 1</div>
-                                </div>
-                                <div class="ob-2 p-4 rounded-lg text-center">
-                                    <div class="text-2xl font-bold" id="ob2-hours">0.00</div>
-                                    <div class="text-sm">OB 2</div>
-                                </div>
-                                <div class="ob-3 p-4 rounded-lg text-center">
-                                    <div class="text-2xl font-bold" id="ob3-hours">0.00</div>
-                                    <div class="text-sm">OB 3</div>
-                                </div>
-                                <div class="ob-4 p-4 rounded-lg text-center">
-                                    <div class="text-2xl font-bold" id="ob4-hours">0.00</div>
-                                    <div class="text-sm">OB 4</div>
-                                </div>
-								<div class="ob-total p-4 rounded-lg text-center bg-gray-100">
-									<div class="text-2xl font-bold" id="total-hours">0.00</div>
-									<div class="text-sm">Totalt</div>
-								</div>								
+                    <!-- OB-timmar sammanfattning -->
+                    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">OB-timmar sammanfattning</h2>
+                        
+                        <div class="grid grid-cols-3 gap-4 stats-grid">
+                            <div class="ob-base p-4 rounded-lg text-center ob-card">
+                                <div class="text-2xl font-bold" id="base-hours">0.00</div>
+                                <div class="text-sm">Baslön</div>
                             </div>
+                            <div class="ob-1 p-4 rounded-lg text-center ob-card">
+                                <div class="text-2xl font-bold" id="ob1-hours">0.00</div>
+                                <div class="text-sm">OB 1</div>
+                            </div>
+                            <div class="ob-2 p-4 rounded-lg text-center ob-card">
+                                <div class="text-2xl font-bold" id="ob2-hours">0.00</div>
+                                <div class="text-sm">OB 2</div>
+                            </div>
+                            <div class="ob-3 p-4 rounded-lg text-center ob-card">
+                                <div class="text-2xl font-bold" id="ob3-hours">0.00</div>
+                                <div class="text-sm">OB 3</div>
+                            </div>
+                            <div class="ob-4 p-4 rounded-lg text-center ob-card">
+                                <div class="text-2xl font-bold" id="ob4-hours">0.00</div>
+                                <div class="text-sm">OB 4</div>
+                            </div>
+                            <div class="ob-total p-4 rounded-lg text-center bg-gray-100 ob-card">
+                                <div class="text-2xl font-bold" id="total-hours">0.00</div>
+                                <div class="text-sm">Totalt</div>
+                            </div>								
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección: Projekt -->
+                <div id="projects-section" class="section">
+                    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold text-gray-800">Mina projekt</h2>
+                            <button id="create-project-btn" class="bg-primary text-white p-3 rounded-full hover:bg-blue-600 transition">
+                                <i class="fas fa-plus"></i>
+                            </button>
                         </div>
                         
-                        <!-- Kort: Tidsregistreringshistorik -->
-                        <div class="bg-white rounded-xl shadow-md p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-bold text-gray-800">Tidshistorik</h2>
+                        <div id="projects-list" class="space-y-2 max-h-96 overflow-y-auto scrollbar-hide">
+                            <!-- Projekt kommer att laddas här -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección: Historik -->
+                <div id="history-section" class="section">
+                    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold text-gray-800">Tidshistorik</h2>
+                            <div class="flex space-x-2 filter-bar">
+                                <select id="filter-year" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="all">Alla år</option>
+                                </select>
+                                <select id="filter-month" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="all">Alla månader</option>
+                                </select>
+                                <select id="filter-ob" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="all">Alla OB-typer</option>
+                                    <option value="base">Baslön</option>
+                                    <option value="ob1">OB 1</option>
+                                    <option value="ob2">OB 2</option>
+                                    <option value="ob3">OB 3</option>
+                                    <option value="ob4">OB 4</option>
+                                </select>
                                 <div class="flex space-x-2">
-                                    <select id="filter-year" class="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="all">Alla år</option>
-                                    </select>
-                                    <select id="filter-month" class="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="all">Alla månader</option>
-                                    </select>
-                                    <select id="filter-ob" class="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="all">Alla OB-typer</option>
-                                        <option value="base">Baslön</option>
-                                        <option value="ob1">OB 1</option>
-                                        <option value="ob2">OB 2</option>
-                                        <option value="ob3">OB 3</option>
-                                        <option value="ob4">OB 4</option>
-                                    </select>
                                     <button id="export-pdf" class="bg-primary text-white p-2 rounded-md hover:bg-blue-600 transition">
                                         <i class="fas fa-file-pdf"></i>
                                     </button>
@@ -476,25 +588,27 @@
                                     </button>
                                 </div>
                             </div>
-                            
-                            <div id="hours-history" class="overflow-x-auto">
-                                <!-- Historik kommer att laddas här med månadsgrupper -->
-                            </div>
                         </div>
                         
-                        <!-- Kort: Statistik -->
-                        <div class="bg-white rounded-xl shadow-md p-6">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4">Statistik</h2>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h3 class="font-medium text-gray-700 mb-3">Fördelning per projekt</h3>
-                                    <canvas id="project-chart" height="250"></canvas>
-                                </div>
-                                <div>
-                                    <h3 class="font-medium text-gray-700 mb-3">Timmar per vecka</h3>
-                                    <canvas id="weekly-chart" height="250"></canvas>
-                                </div>
+                        <div id="hours-history" class="overflow-x-auto">
+                            <!-- Historik kommer att laddas här med månadsgrupper -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección: Statistik -->
+                <div id="stats-section" class="section">
+                    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Statistik</h2>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="font-medium text-gray-700 mb-3">Fördelning per projekt</h3>
+                                <canvas id="project-chart" height="250"></canvas>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-700 mb-3">Timmar per vecka</h3>
+                                <canvas id="weekly-chart" height="250"></canvas>
                             </div>
                         </div>
                     </div>
@@ -503,9 +617,9 @@
         </main>
 
         <!-- Sidfot -->
-        <footer class="bg-dark text-white py-4 mt-auto">
+        <footer class="bg-dark text-white py-4 mt-auto desktop-only">
             <div class="container mx-auto px-4 text-center">
-                <p>Tidbok OB &copy; 2023 - Alla rättigheter förbehållna</p>
+                <p>Tidbok OB &copy; 2025 - Alla rättigheter förbehållna</p>
             </div>
         </footer>
     </div>
@@ -513,22 +627,22 @@
     <!-- Modaler -->
     <!-- Modal för nytt projekt -->
     <div id="project-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Nytt Projekt</h3>
             
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2">Projektnamn</label>
-                <input type="text" id="project-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                <input type="text" id="project-name" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
             </div>
             
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2">Projektkod</label>
-                <input type="text" id="project-code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                <input type="text" id="project-code" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
             </div>
             
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2">Beskrivning (valfritt)</label>
-                <textarea id="project-description" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                <textarea id="project-description" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
             </div>
             
             <div class="flex justify-end space-x-3">
@@ -540,33 +654,33 @@
 
     <!-- Modal för användarprofil -->
     <div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Min Profil</h3>
             
             <div class="space-y-4">
                 <div>
                     <label class="block text-gray-700 mb-2">Förnamn</label>
-                    <input type="text" id="profile-firstname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Efternamn</label>
-                    <input type="text" id="profile-lastname" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">E-post</label>
-                    <input type="email" id="profile-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" readonly>
+                    <input type="email" id="profile-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" readonly>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Telefon</label>
-                    <input type="text" id="profile-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Personnummer</label>
-                    <input type="text" id="profile-personalnumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
             </div>
             
@@ -579,7 +693,7 @@
 
     <!-- Modal för registreringsdetaljer -->
     <div id="detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Registreringsdetaljer</h3>
             
             <div id="detail-content" class="space-y-3">
@@ -594,19 +708,19 @@
 
     <!-- Modal för redigering -->
     <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Redigera Registrering</h3>
             
             <div id="edit-content" class="space-y-4">
                 <input type="hidden" id="edit-id">
                 <div>
                     <label class="block text-gray-700 mb-2">Datum</label>
-                    <input type="date" id="edit-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="date" id="edit-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Projekt</label>
-                    <select id="edit-project" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="edit-project" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="">Välj projekt</option>
                     </select>
                 </div>
@@ -614,17 +728,17 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-gray-700 mb-2">Starttid</label>
-                        <input type="time" id="edit-start" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="time" id="edit-start" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
                         <label class="block text-gray-700 mb-2">Sluttid</label>
-                        <input type="time" id="edit-end" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="time" id="edit-end" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Rast</label>
-                    <select id="edit-break" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="edit-break" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="0.5">En halvtimme</option>
                         <option value="1">1 timme</option>
                         <option value="2">2 timmar</option>
@@ -633,12 +747,12 @@
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Kollegor</label>
-                    <input type="text" id="edit-colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="edit-colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Anteckningar</label>
-                    <textarea id="edit-notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    <textarea id="edit-notes" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                 </div>
             </div>
             
@@ -651,31 +765,31 @@
 
     <!-- Modal för PDF-exportfilter -->
     <div id="pdf-filter-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Exportera till PDF</h3>
             
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-gray-700 mb-2">Från datum</label>
-                        <input type="date" id="pdf-start-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="date" id="pdf-start-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                     <div>
                         <label class="block text-gray-700 mb-2">Till datum</label>
-                        <input type="date" id="pdf-end-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="date" id="pdf-end-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Projekt</label>
-                    <select id="pdf-project" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="pdf-project" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="all">Alla projekt</option>
                     </select>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">OB-typ</label>
-                    <select id="pdf-ob" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="pdf-ob" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="all">Alla OB-typer</option>
                         <option value="base">Baslön</option>
                         <option value="ob1">OB 1</option>
@@ -687,7 +801,7 @@
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Sortera efter</label>
-                    <select id="pdf-sort" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="pdf-sort" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="date">Datum</option>
                         <option value="project">Projekt</option>
                         <option value="hours">Timmar</option>
@@ -907,14 +1021,14 @@
                     
                     // Lägg till i projektlistan
                     const projectElement = document.createElement('div');
-                    projectElement.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
+                    projectElement.className = 'flex justify-between items-center bg-gray-50 p-3 rounded mb-2';
                     projectElement.innerHTML = `
-                        <div>
+                        <div class="flex-1">
                             <span class="font-medium">${project.name}</span>
                             <p class="text-sm text-gray-500">${project.code}</p>
                             ${project.description ? `<p class="text-sm text-gray-500">${project.description}</p>` : ''}
                         </div>
-                        <button class="delete-project text-red-500 hover:text-red-700" data-id="${project.id}">
+                        <button class="delete-project text-red-500 hover:text-red-700 p-2" data-id="${project.id}">
                             <i class="fas fa-trash"></i>
                         </button>
                     `;
@@ -1039,7 +1153,6 @@
 				const total = obSummary.base + obSummary.ob1 + obSummary.ob2 + obSummary.ob3 + obSummary.ob4;
 				document.getElementById('total-hours').textContent = formatHours(total);
 				
-                
                 // Skapa månadsgrupper
                 Object.keys(entriesByMonth).sort().reverse().forEach(monthKey => {
                     const entries = entriesByMonth[monthKey];
@@ -1089,10 +1202,10 @@
                                             </button>
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2 edit-entry" data-id="${entry.id}">
+                                            <button class="text-blue-500 hover:text-blue-700 mr-2 edit-entry p-1" data-id="${entry.id}">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="text-red-500 hover:text-red-700 delete-entry" data-id="${entry.id}">
+                                            <button class="text-red-500 hover:text-red-700 delete-entry p-1" data-id="${entry.id}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
@@ -1361,7 +1474,7 @@
 				
 				<div class="pt-3">
 					<div class="font-medium">OB-uppdelning:</div>
-					<div class="grid grid-cols-5 gap-2 mt-2">
+					<div class="grid grid-cols-2 gap-2 mt-2">
 						<div class="ob-base p-2 rounded text-center">
 							<div class="font-bold">Baslön</div>
 							<div>${formatHours(obHours.breakdown.base)} h</div>
@@ -1712,7 +1825,7 @@
             });
             
             // Sortera registreringar
-            filteredEntries.sort((a, b) => {
+            filteredEntries.sort((b, a) => {
                 const aDate = new Date(a.date);
                 const bDate = new Date(b.date);
                 
@@ -1893,6 +2006,38 @@
                 monthSelect.appendChild(option);
             });
             
+            // Menú móvil
+            const menuItems = document.querySelectorAll('.mobile-menu-item');
+            const sections = document.querySelectorAll('.section');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const sectionId = item.getAttribute('data-section');
+                    
+                    // Actualizar menú activo
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Mostrar sección correspondiente
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === `${sectionId}-section`) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Mostrar menú móvil solo cuando el usuario esté autenticado
+            const updateMobileMenu = (user) => {
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (user) {
+                    mobileMenu.classList.add('active');
+                } else {
+                    mobileMenu.classList.remove('active');
+                }
+            };
+            
             // Initiera Firebase Auth state observer
             window.firebase.onAuthStateChanged(window.firebase.auth, (user) => {
                 if (user) {
@@ -1901,6 +2046,7 @@
                     document.getElementById('auth-screen').classList.add('hidden');
                     document.getElementById('app-content').classList.remove('hidden');
                     document.getElementById('user-info').classList.remove('hidden');
+                    updateMobileMenu(user);
                     
                     // Ladda användardata
                     loadUserProfile(user.uid);
@@ -1913,6 +2059,7 @@
                     document.getElementById('auth-screen').classList.remove('hidden');
                     document.getElementById('app-content').classList.add('hidden');
                     document.getElementById('user-info').classList.add('hidden');
+                    updateMobileMenu(null);
                 }
             });
             
