@@ -442,6 +442,10 @@
                                     <div class="text-2xl font-bold" id="ob4-hours">0.00</div>
                                     <div class="text-sm">OB 4</div>
                                 </div>
+								<div class="ob-total p-4 rounded-lg text-center bg-gray-100">
+									<div class="text-2xl font-bold" id="total-hours">0.00</div>
+									<div class="text-sm">Totalt</div>
+								</div>								
                             </div>
                         </div>
                         
@@ -1032,6 +1036,9 @@
                 document.getElementById('ob2-hours').textContent = formatHours(obSummary.ob2);
                 document.getElementById('ob3-hours').textContent = formatHours(obSummary.ob3);
                 document.getElementById('ob4-hours').textContent = formatHours(obSummary.ob4);
+				const total = obSummary.base + obSummary.ob1 + obSummary.ob2 + obSummary.ob3 + obSummary.ob4;
+				document.getElementById('total-hours').textContent = formatHours(total);
+				
                 
                 // Skapa månadsgrupper
                 Object.keys(entriesByMonth).sort().reverse().forEach(monthKey => {
@@ -1301,20 +1308,20 @@
 			const [y, m, d] = date.split("-");
 			const localDate = new Date(y, m - 1, d); 
 
-			const newEntry = {
-				date: localDate.toISOString(),   // ← nu korrekt
-				projectId,
-				projectName,
-				startTime: startDateTime.toISOString(),
-				endTime: endDateTime.toISOString(),
-				breakTime: parseFloat(breakTime),
-				colleagues,
-				notes,
-				createdAt: new Date().toISOString()
-			};
-			
-			const timeRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/timeEntries`);
-			window.firebase.push(timeRef, newEntry);
+            const newEntry = {
+                date,
+                projectId,
+                projectName,
+                startTime: startDateTime.toISOString(),
+                endTime: endDateTime.toISOString(),
+                breakTime: parseFloat(breakTime),
+                colleagues,
+                notes,
+                createdAt: new Date().toISOString()
+            };
+            
+            const timeRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/timeEntries`);
+            window.firebase.push(timeRef, newEntry);
 			
 			// Rensa formulär
 			document.getElementById('start-time').value = '01:30';
@@ -1478,17 +1485,23 @@
             }
         }
         
-		// Funktion för att exportera till PDF
 		function exportToPDF() {
 			document.getElementById('pdf-filter-modal').classList.remove('hidden');
 			
-			// Sätt datumfilter till aktuell månad
 			const today = new Date();
 			const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 			const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-			
-			document.getElementById('pdf-start-date').value = firstDay.toISOString().split('T')[0];
-			document.getElementById('pdf-end-date').value = lastDay.toISOString().split('T')[0];
+
+			// formatear YYYY-MM-DD en local time
+			const formatDate = (d) => {
+				const year = d.getFullYear();
+				const month = String(d.getMonth() + 1).padStart(2, '0');
+				const day = String(d.getDate()).padStart(2, '0');
+				return `${year}-${month}-${day}`;
+			};
+
+			document.getElementById('pdf-start-date').value = formatDate(firstDay);
+			document.getElementById('pdf-end-date').value = formatDate(lastDay);
 		}
 
 		// Funktion för att generera PDF baserat på filter
