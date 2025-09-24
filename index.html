@@ -2,8 +2,9 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tidbok OB - Timregistrering</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase SDK Modular -->
@@ -18,7 +19,7 @@
             authDomain: "userbase-5061c.firebaseapp.com",
             databaseURL: "https://userbase-5061c-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "userbase-5061c",
-            storageBucket: "userbase-5061c.appspot.com",
+            storageBucket: "userbase-5061c.firebasestorage.app",
             messagingSenderId: "414829360217",
             appId: "1:414829360217:web:21d0839ee0ccfbea336d48"
         };
@@ -52,21 +53,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3b82f6',
-                        secondary: '#10b981',
-                        dark: '#1e293b',
-                        light: '#f8fafc'
-                    }
-                }
-            }
-        }
-    </script>
+    
     <style>
+        /* Estilos personalizados */
         .ob-base { background-color: #dbeafe; }
         .ob-1 { background-color: #ffedd5; }
         .ob-2 { background-color: #fee2e2; }
@@ -207,6 +196,7 @@
             background: white;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            padding: 0.5rem 0;
         }
         
         .mobile-menu.active {
@@ -216,8 +206,9 @@
         .mobile-menu-item {
             flex: 1;
             text-align: center;
-            padding: 0.75rem;
+            padding: 0.5rem;
             color: #6b7280;
+            font-size: 0.75rem;
         }
         
         .mobile-menu-item.active {
@@ -230,10 +221,6 @@
             margin-bottom: 0.25rem;
         }
         
-        .mobile-menu-item span {
-            font-size: 0.75rem;
-        }
-        
         .section {
             display: none;
             padding-bottom: 80px; /* Espacio para el menú móvil */
@@ -243,11 +230,11 @@
             display: block;
         }
         
-        /* Ajustes para pantallas pequeñas */
+        /* Mejoras para pantallas pequeñas */
         @media (max-width: 768px) {
             .container {
-                padding-left: 1rem;
-                padding-right: 1rem;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
             }
             
             .desktop-only {
@@ -259,15 +246,16 @@
             }
             
             .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
             }
             
             .ob-card {
-                padding: 0.75rem;
+                padding: 0.5rem;
             }
             
             .ob-card .text-2xl {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
             
             .filter-bar {
@@ -277,6 +265,23 @@
             
             .filter-bar select {
                 width: 100%;
+                font-size: 14px;
+            }
+            
+            .mobile-menu-item {
+                padding: 0.25rem;
+            }
+            
+            .mobile-menu-item i {
+                font-size: 1rem;
+            }
+            
+            .mobile-menu-item span {
+                font-size: 0.7rem;
+            }
+            
+            .section {
+                padding-bottom: 70px;
             }
         }
         
@@ -284,6 +289,45 @@
             .mobile-only {
                 display: none;
             }
+        }
+        
+        /* Mejoras para formularios en móviles */
+        input[type="date"], input[type="time"], select {
+            font-size: 16px; /* Prevenir zoom en iOS */
+        }
+        
+        /* Mejoras para la tabla de historial en móviles */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table-responsive table {
+            min-width: 600px;
+        }
+        
+        /* Estilos para modales en móviles */
+        .modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Mejoras para el menú de navegación en móviles */
+        nav .container {
+            padding: 0.5rem 1rem;
+        }
+        
+        nav h1 {
+            font-size: 1.1rem;
+        }
+        
+        #user-info {
+            font-size: 0.9rem;
+        }
+        
+        /* Mejoras para botones en móviles */
+        button {
+            touch-action: manipulation;
         }
     </style>
 </head>
@@ -310,11 +354,11 @@
                     <div id="user-info" class="hidden">
                         <div class="flex items-center">
                             <img id="user-avatar" class="w-8 h-8 rounded-full mr-2" src="https://ui-avatars.com/api/?background=random&name=U" alt="Avatar">
-                            <span id="user-name" class="mr-2">Användare</span>
-                            <button id="profile-btn" class="bg-white text-primary px-3 py-1 rounded hover:bg-gray-200 transition mr-2">
+                            <span id="user-name" class="mr-2 text-sm">Användare</span>
+                            <button id="profile-btn" class="bg-white text-primary px-2 py-1 rounded hover:bg-gray-200 transition mr-2">
                                 <i class="fas fa-user"></i>
                             </button>
-                            <button id="logout-btn" class="bg-white text-primary px-3 py-1 rounded hover:bg-gray-200 transition">
+                            <button id="logout-btn" class="bg-white text-primary px-2 py-1 rounded hover:bg-gray-200 transition">
                                 <i class="fas fa-sign-out-alt"></i>
                             </button>
                         </div>
@@ -373,12 +417,12 @@
                 <div id="login-tab" class="auth-tab active">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="email">E-post</label>
-                        <input type="email" id="email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="email" id="email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="email">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="password">Lösenord</label>
-                        <input type="password" id="password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="password" id="password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="current-password">
                     </div>
                     
                     <div class="mb-6">
@@ -392,32 +436,32 @@
                 <div id="register-tab" class="auth-tab">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-email">E-post</label>
-                        <input type="email" id="reg-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="email" id="reg-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="email">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-password">Lösenord</label>
-                        <input type="password" id="reg-password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="password" id="reg-password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="new-password">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-firstname">Förnamn</label>
-                        <input type="text" id="reg-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="text" id="reg-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="given-name">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-lastname">Efternamn</label>
-                        <input type="text" id="reg-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="text" id="reg-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="family-name">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-phone">Telefon</label>
-                        <input type="text" id="reg-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="tel" id="reg-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="tel">
                     </div>
                     
                     <div class="mb-6">
                         <label class="block text-gray-700 mb-2" for="reg-personalnumber">Personnummer</label>
-                        <input type="text" id="reg-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="text" id="reg-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="off">
                     </div>
                     
                     <div class="mb-6">
@@ -590,7 +634,7 @@
                             </div>
                         </div>
                         
-                        <div id="hours-history" class="overflow-x-auto">
+                        <div id="hours-history" class="overflow-x-auto table-responsive">
                             <!-- Historik kommer att laddas här med månadsgrupper -->
                         </div>
                     </div>
@@ -627,7 +671,7 @@
     <!-- Modaler -->
     <!-- Modal för nytt projekt -->
     <div id="project-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4 modal-content">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Nytt Projekt</h3>
             
             <div class="mb-4">
@@ -654,7 +698,7 @@
 
     <!-- Modal för användarprofil -->
     <div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4 modal-content">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Min Profil</h3>
             
             <div class="space-y-4">
@@ -693,7 +737,7 @@
 
     <!-- Modal för registreringsdetaljer -->
     <div id="detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4 modal-content">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Registreringsdetaljer</h3>
             
             <div id="detail-content" class="space-y-3">
@@ -708,7 +752,7 @@
 
     <!-- Modal för redigering -->
     <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4 modal-content">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Redigera Registrering</h3>
             
             <div id="edit-content" class="space-y-4">
@@ -765,7 +809,7 @@
 
     <!-- Modal för PDF-exportfilter -->
     <div id="pdf-filter-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4 modal-content">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Exportera till PDF</h3>
             
             <div class="space-y-4">
@@ -852,9 +896,10 @@
             // Bestäm OB-typ för en specifik timme
             function getHourType(date) {
                 const hour = date.getHours() + date.getMinutes() / 60;
+                const day = date.getDay();
 
-                if (dayOfWeek === 0) return 'ob4'; // Söndag: allt är OB 4
-                if (dayOfWeek === 6) return hour >= 13 ? 'ob3' : 'base'; // Lördag
+                if (day === 0) return 'ob4'; // Söndag: allt är OB 4
+                if (day === 6) return hour >= 13 ? 'ob3' : 'base'; // Lördag
                 if (hour >= 6 && hour < 18) return 'base';
                 if (hour >= 18 && hour < 22) return 'ob1';
                 return 'ob2'; // 22:00 till 06:00
@@ -917,25 +962,25 @@
         }
         
         // Funktion för att spara användarprofil
-		function saveUserProfile(userId) {
-			const profileData = {
-				firstname: document.getElementById('profile-firstname').value,
-				lastname: document.getElementById('profile-lastname').value,
-				phone: document.getElementById('profile-phone').value,
-				personalnumber: document.getElementById('profile-personalnumber').value
-			};
-			
-			const profileRef = window.firebase.ref(window.firebase.database, `users/${userId}/profile`);
-			window.firebase.update(profileRef, profileData)  // Cambiado de set() a update()
-				.then(() => {
-					alert('Profil sparad!');
-					document.getElementById('profile-modal').classList.add('hidden');
-				})
-				.catch((error) => {
-					console.error('Error saving profile:', error);
-					alert('Ett fel uppstod vid sparande av profil.');
-				});
-		}
+        function saveUserProfile(userId) {
+            const profileData = {
+                firstname: document.getElementById('profile-firstname').value,
+                lastname: document.getElementById('profile-lastname').value,
+                phone: document.getElementById('profile-phone').value,
+                personalnumber: document.getElementById('profile-personalnumber').value
+            };
+            
+            const profileRef = window.firebase.ref(window.firebase.database, `users/${userId}/profile`);
+            window.firebase.update(profileRef, profileData)
+                .then(() => {
+                    alert('Profil sparad!');
+                    document.getElementById('profile-modal').classList.add('hidden');
+                })
+                .catch((error) => {
+                    console.error('Error saving profile:', error);
+                    alert('Ett fel uppstod vid sparande av profil.');
+                });
+        }
         
         // Funktion för att ladda företagsinställningar
         function loadCompanySettings(userId) {
@@ -1049,10 +1094,7 @@
         function loadTimeEntries(userId) {
             const timeRef = window.firebase.ref(window.firebase.database, `users/${userId}/timeEntries`);
             
-			window.firebase.onValue(timeRef, (snapshot) => {
-				// Depuración: cuántos registros llegan
-				console.log("Entradas crudas:", snapshot.size || snapshot.numChildren?.());
-			
+            window.firebase.onValue(timeRef, (snapshot) => {
                 timeEntries = [];
                 const historyContainer = document.getElementById('hours-history');
                 historyContainer.innerHTML = '';
@@ -1153,9 +1195,9 @@
                 document.getElementById('ob2-hours').textContent = formatHours(obSummary.ob2);
                 document.getElementById('ob3-hours').textContent = formatHours(obSummary.ob3);
                 document.getElementById('ob4-hours').textContent = formatHours(obSummary.ob4);
-				const total = obSummary.base + obSummary.ob1 + obSummary.ob2 + obSummary.ob3 + obSummary.ob4;
-				document.getElementById('total-hours').textContent = formatHours(total);
-				
+                const total = obSummary.base + obSummary.ob1 + obSummary.ob2 + obSummary.ob3 + obSummary.ob4;
+                document.getElementById('total-hours').textContent = formatHours(total);
+                
                 // Skapa månadsgrupper
                 Object.keys(entriesByMonth).sort().reverse().forEach(monthKey => {
                     const entries = entriesByMonth[monthKey];
@@ -1175,7 +1217,7 @@
                     `;
                     
                     const monthContent = document.createElement('div');
-                    monthContent.className = 'month-content collapsed';
+                    monthContent.className = 'month-content expanded'; // Cambiado a expanded por defecto
                     
                     const table = document.createElement('table');
                     table.className = 'min-w-full divide-y divide-gray-200';
@@ -1283,7 +1325,8 @@
         // Funktion för att uppdatera diagram
         function updateCharts(projectStats, weekStats) {
             // Projektfördelningsdiagram
-            const projectCtx = document.getElementById('project-chart').getContext('2d');
+            const projectCtx = document.getElementById('project-chart');
+            if (!projectCtx) return;
             
             // Förstör föregående diagram om det finns
             if (window.projectChart) {
@@ -1316,7 +1359,8 @@
             });
             
             // Veckodiagram
-            const weeklyCtx = document.getElementById('weekly-chart').getContext('2d');
+            const weeklyCtx = document.getElementById('weekly-chart');
+            if (!weeklyCtx) return;
             
             // Sortera veckor
             const sortedWeeks = Object.keys(weekStats).sort();
@@ -1392,37 +1436,37 @@
             }
         }
         
-		// Funktion för att spara tidsregistrering
-		function saveTimeEntry() {
-			const date = document.getElementById('work-date').value;
-			const projectId = document.getElementById('project-select').value;
-			const startTime = document.getElementById('start-time').value;
-			const endTime = document.getElementById('end-time').value;
-			const breakTime = document.getElementById('break-time').value || '0.5';
-			const colleagues = document.getElementById('colleagues').value;
-			const notes = document.getElementById('notes').value;
-			
-			if (!date || !projectId || !startTime || !endTime) {
-				alert('Fyll i alla obligatoriska fält');
-				return;
-			}
-			
-			// Hämta projektnamn
-			const project = projects.find(p => p.id === projectId);
-			const projectName = project ? project.name : '';
-			
-			// Skapa fullständiga datumobjekt med korrekt hantering av tidszoner
-			const startDateTime = new Date(`${date}T${startTime}`);
-			const endDateTime = new Date(`${date}T${endTime}`);
-			
-			// Om sluttid är före starttid, antag att det är nästa dag
-			if (endDateTime < startDateTime) {
-				endDateTime.setDate(endDateTime.getDate() + 1);
-			}
+        // Funktion för att spara tidsregistrering
+        function saveTimeEntry() {
+            const date = document.getElementById('work-date').value;
+            const projectId = document.getElementById('project-select').value;
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+            const breakTime = document.getElementById('break-time').value || '0.5';
+            const colleagues = document.getElementById('colleagues').value;
+            const notes = document.getElementById('notes').value;
+            
+            if (!date || !projectId || !startTime || !endTime) {
+                alert('Fyll i alla obligatoriska fält');
+                return;
+            }
+            
+            // Hämta projektnamn
+            const project = projects.find(p => p.id === projectId);
+            const projectName = project ? project.name : '';
+            
+            // Skapa fullständiga datumobjekt med korrekt hantering av tidszoner
+            const startDateTime = new Date(`${date}T${startTime}`);
+            const endDateTime = new Date(`${date}T${endTime}`);
+            
+            // Om sluttid är före starttid, antag att det är nästa dag
+            if (endDateTime < startDateTime) {
+                endDateTime.setDate(endDateTime.getDate() + 1);
+            }
 
-			// 🚀 Fix här: gör datumet lokalt (medianoche) för att undvika UTC-skift
-			const [y, m, d] = date.split("-");
-			const localDate = new Date(y, m - 1, d); 
+            // 🚀 Fix här: gör datumet lokalt (medianoche) för att undvika UTC-skift
+            const [y, m, d] = date.split("-");
+            const localDate = new Date(y, m - 1, d); 
 
             const newEntry = {
                 date,
@@ -1438,86 +1482,89 @@
             
             const timeRef = window.firebase.ref(window.firebase.database, `users/${currentUser.uid}/timeEntries`);
             window.firebase.push(timeRef, newEntry);
-			
-			// Rensa formulär
-			document.getElementById('start-time').value = '01:30';
-			document.getElementById('end-time').value = '10:00';
-			document.getElementById('break-time').value = '0.5';
-			document.getElementById('colleagues').value = '';
-			document.getElementById('notes').value = '';
-		}
+            
+            // Rensa formulär
+            document.getElementById('start-time').value = '01:30';
+            document.getElementById('end-time').value = '10:00';
+            document.getElementById('break-time').value = '0.5';
+            document.getElementById('colleagues').value = '';
+            document.getElementById('notes').value = '';
+            
+            // Visa mensaje de éxito
+            alert('Tidsregistrering sparad!');
+        }
 
-		// Funktion för att visa registreringsdetaljer
-		function showEntryDetail(entryId) {
-			const entry = timeEntries.find(e => e.id === entryId);
-			if (!entry) return;
-			
-			// Beräkna timmar
-			const breakHours = parseFloat(entry.breakTime) || 0;
-			const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
-			
-			const detailContent = document.getElementById('detail-content');
-			detailContent.innerHTML = `
-				<div class="grid grid-cols-2 gap-2">
-					<div class="font-medium">Datum:</div>
-					<div>${new Date(entry.date).toLocaleDateString('sv-SE')}</div>
-					
-					<div class="font-medium">Projekt:</div>
-					<div>${entry.projectName || 'Inget projekt'}</div>
-					
-					<div class="font-medium">Tid:</div>
-					<div>${new Date(entry.startTime).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})} - ${new Date(entry.endTime).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</div>
-					
-					<div class="font-medium">Totalt antal timmar:</div>
-					<div>${formatHours(obHours.total)} h</div>
-					
-					<div class="font-medium">Rast:</div>
-					<div>${entry.breakTime} h</div>
-				</div>
-				
-				<div class="pt-3">
-					<div class="font-medium">OB-uppdelning:</div>
-					<div class="grid grid-cols-2 gap-2 mt-2">
-						<div class="ob-base p-2 rounded text-center">
-							<div class="font-bold">Baslön</div>
-							<div>${formatHours(obHours.breakdown.base)} h</div>
-						</div>
-						<div class="ob-1 p-2 rounded text-center">
-							<div class="font-bold">OB 1</div>
-							<div>${formatHours(obHours.breakdown.ob1)} h</div>
-						</div>
-						<div class="ob-2 p-2 rounded text-center">
-							<div class="font-bold">OB 2</div>
-							<div>${formatHours(obHours.breakdown.ob2)} h</div>
-						</div>
-						<div class="ob-3 p-2 rounded text-center">
-							<div class="font-bold">OB 3</div>
-							<div>${formatHours(obHours.breakdown.ob3)} h</div>
-						</div>
-						<div class="ob-4 p-2 rounded text-center">
-							<div class="font-bold">OB 4</div>
-							<div>${formatHours(obHours.breakdown.ob4)} h</div>
-						</div>
-					</div>
-				</div>
-				
-				${entry.colleagues ? `
-				<div class="pt-3">
-					<div class="font-medium">Kollegor:</div>
-					<div>${entry.colleagues}</div>
-				</div>
-				` : ''}
-				
-				${entry.notes ? `
-				<div class="pt-3">
-					<div class="font-medium">Anteckningar:</div>
-					<div>${entry.notes}</div>
-				</div>
-				` : ''}
-			`;
-			
-			document.getElementById('detail-modal').classList.remove('hidden');
-		}
+        // Funktion för att visa registreringsdetaljer
+        function showEntryDetail(entryId) {
+            const entry = timeEntries.find(e => e.id === entryId);
+            if (!entry) return;
+            
+            // Beräkna timmar
+            const breakHours = parseFloat(entry.breakTime) || 0;
+            const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+            
+            const detailContent = document.getElementById('detail-content');
+            detailContent.innerHTML = `
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="font-medium">Datum:</div>
+                    <div>${new Date(entry.date).toLocaleDateString('sv-SE')}</div>
+                    
+                    <div class="font-medium">Projekt:</div>
+                    <div>${entry.projectName || 'Inget projekt'}</div>
+                    
+                    <div class="font-medium">Tid:</div>
+                    <div>${new Date(entry.startTime).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})} - ${new Date(entry.endTime).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</div>
+                    
+                    <div class="font-medium">Totalt antal timmar:</div>
+                    <div>${formatHours(obHours.total)} h</div>
+                    
+                    <div class="font-medium">Rast:</div>
+                    <div>${entry.breakTime} h</div>
+                </div>
+                
+                <div class="pt-3">
+                    <div class="font-medium">OB-uppdelning:</div>
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <div class="ob-base p-2 rounded text-center">
+                            <div class="font-bold">Baslön</div>
+                            <div>${formatHours(obHours.breakdown.base)} h</div>
+                        </div>
+                        <div class="ob-1 p-2 rounded text-center">
+                            <div class="font-bold">OB 1</div>
+                            <div>${formatHours(obHours.breakdown.ob1)} h</div>
+                        </div>
+                        <div class="ob-2 p-2 rounded text-center">
+                            <div class="font-bold">OB 2</div>
+                            <div>${formatHours(obHours.breakdown.ob2)} h</div>
+                        </div>
+                        <div class="ob-3 p-2 rounded text-center">
+                            <div class="font-bold">OB 3</div>
+                            <div>${formatHours(obHours.breakdown.ob3)} h</div>
+                        </div>
+                        <div class="ob-4 p-2 rounded text-center">
+                            <div class="font-bold">OB 4</div>
+                            <div>${formatHours(obHours.breakdown.ob4)} h</div>
+                        </div>
+                    </div>
+                </div>
+                
+                ${entry.colleagues ? `
+                <div class="pt-3">
+                    <div class="font-medium">Kollegor:</div>
+                    <div>${entry.colleagues}</div>
+                </div>
+                ` : ''}
+                
+                ${entry.notes ? `
+                <div class="pt-3">
+                    <div class="font-medium">Anteckningar:</div>
+                    <div>${entry.notes}</div>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
 
         
         // Funktion för att visa redigeringsformulär
@@ -1591,6 +1638,9 @@
             
             // Stäng modal
             document.getElementById('edit-modal').classList.add('hidden');
+            
+            // Visa mensaje de éxito
+            alert('Tidsregistrering uppdaterad!');
         }
         
         // Funktion för att ta bort tidsregistrering
@@ -1601,192 +1651,192 @@
             }
         }
         
-		function exportToPDF() {
-			document.getElementById('pdf-filter-modal').classList.remove('hidden');
-			
-			const today = new Date();
-			const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-			const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        function exportToPDF() {
+            document.getElementById('pdf-filter-modal').classList.remove('hidden');
+            
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-			// formatear YYYY-MM-DD en local time
-			const formatDate = (d) => {
-				const year = d.getFullYear();
-				const month = String(d.getMonth() + 1).padStart(2, '0');
-				const day = String(d.getDate()).padStart(2, '0');
-				return `${year}-${month}-${day}`;
-			};
+            // formatear YYYY-MM-DD en local time
+            const formatDate = (d) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
 
-			document.getElementById('pdf-start-date').value = formatDate(firstDay);
-			document.getElementById('pdf-end-date').value = formatDate(lastDay);
-		}
+            document.getElementById('pdf-start-date').value = formatDate(firstDay);
+            document.getElementById('pdf-end-date').value = formatDate(lastDay);
+        }
 
-		// Funktion för att generera PDF baserat på filter
-		function generatePDF() {
-			try {
-				// Hämta filtervärden
-				const startDate = document.getElementById('pdf-start-date').value;
-				const endDate = document.getElementById('pdf-end-date').value;
-				const projectId = document.getElementById('pdf-project').value;
-				const obType = document.getElementById('pdf-ob').value;
-				const sortBy = document.getElementById('pdf-sort').value;
-				
-				// Filtrera registreringar baserat på det sparade datumfältet (ISO i localDate)
-				let filteredEntries = timeEntries.filter(entry => {
-					const entryDateObj = new Date(entry.date);
-					const entryYMD = entryDateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+        // Funktion för att generera PDF baserat på filter
+        function generatePDF() {
+            try {
+                // Hämta filtervärden
+                const startDate = document.getElementById('pdf-start-date').value;
+                const endDate = document.getElementById('pdf-end-date').value;
+                const projectId = document.getElementById('pdf-project').value;
+                const obType = document.getElementById('pdf-ob').value;
+                const sortBy = document.getElementById('pdf-sort').value;
+                
+                // Filtrera registreringar baserat på det sparade datumfältet (ISO i localDate)
+                let filteredEntries = timeEntries.filter(entry => {
+                    const entryDateObj = new Date(entry.date);
+                    const entryYMD = entryDateObj.toISOString().split("T")[0]; // YYYY-MM-DD
 
-					// Datumfilter
-					if (startDate && entryYMD < startDate) return false;
-					if (endDate && entryYMD > endDate) return false;
-					
-					// Projektfilter
-					if (projectId !== 'all' && entry.projectId !== projectId) return false;
-					
-					// OB-filter
-					if (obType !== 'all') {
-						const breakHours = parseFloat(entry.breakTime) || 0;
-						const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
-						
-						switch(obType) {
-							case 'base': if (obHours.breakdown.base <= 0) return false; break;
-							case 'ob1': if (obHours.breakdown.ob1 <= 0) return false; break;
-							case 'ob2': if (obHours.breakdown.ob2 <= 0) return false; break;
-							case 'ob3': if (obHours.breakdown.ob3 <= 0) return false; break;
-							case 'ob4': if (obHours.breakdown.ob4 <= 0) return false; break;
-						}
-					}
-					
-					return true;
-				});
-				
-				// Sortera registreringar
-				filteredEntries.sort((a, b) => {
-					const aDate = new Date(a.date);
-					const bDate = new Date(b.date);
-					
-					switch(sortBy) {
-						case 'date': return aDate - bDate;
-						case 'project': return a.projectName.localeCompare(b.projectName);
-						case 'hours': 
-							const aHours = calculateOBHours(a.startTime, a.endTime, parseFloat(a.breakTime) || 0).total;
-							const bHours = calculateOBHours(b.startTime, b.endTime, parseFloat(b.breakTime) || 0).total;
-							return bHours - aHours;
-						default: return aDate - bDate;
-					}
-				});
-				
-				// Beräkna sammanfattning
-				let summary = { base: 0, ob1: 0, ob2: 0, ob3: 0, ob4: 0, total: 0 };
-				filteredEntries.forEach(entry => {
-					const breakHours = parseFloat(entry.breakTime) || 0;
-					const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
-					summary.base += obHours.breakdown.base;
-					summary.ob1 += obHours.breakdown.ob1;
-					summary.ob2 += obHours.breakdown.ob2;
-					summary.ob3 += obHours.breakdown.ob3;
-					summary.ob4 += obHours.breakdown.ob4;
-					summary.total += obHours.total;
-				});
-				
-				// Skapa PDF
-				const { jsPDF } = window.jspdf;
-				const doc = new jsPDF();
-				
-				// Sidhuvud
-				doc.setFontSize(16);
-				doc.setTextColor(40);
-				doc.setFont("helvetica", "bold");
-				doc.text('Tidrapport', 105, 15, { align: 'center' });
-				
-				doc.setFontSize(10);
-				doc.setFont("helvetica", "normal");
-				
-				// Företagsinfo
-				if (companySettings.address) doc.text(companySettings.address, 20, 25);
-				if (companySettings.postal) doc.text(companySettings.postal, 20, 30);
-				if (companySettings.phone) doc.text(`Tel ${companySettings.phone}`, 20, 35);
-				if (companySettings.orgnr) doc.text(`Organisationsnummer: ${companySettings.orgnr}`, 20, 40);
-				
-				// Användarinformation
-				const userName = document.getElementById('user-name').textContent;
-				doc.text(`Användare: ${userName}`, 140, 25);
-				doc.text(`Exporterad: ${new Date().toLocaleDateString('sv-SE')}`, 140, 30);
-				
-				// Sammanfattningstabell
-				const summaryHeaders = [['Timtyp', 'Timmar']];
-				const summaryData = [
-					['Baslön', formatHours(summary.base)],
-					['OB 1', formatHours(summary.ob1)],
-					['OB 2', formatHours(summary.ob2)],
-					['OB 3', formatHours(summary.ob3)],
-					['OB 4', formatHours(summary.ob4)],
-					['TOTALT', formatHours(summary.total)]
-				];
-				
-				doc.autoTable({
-					head: summaryHeaders,
-					body: summaryData,
-					startY: 50,
-					theme: 'grid',
-					headStyles: { fillColor: [59, 130, 246], textColor: 255, fontStyle: 'bold' },
-					styles: { fontSize: 12 },
-					columnStyles: { 0: { cellWidth: 60, fontStyle: 'bold' }, 1: { cellWidth: 40 } }
-				});
-				
-				// Detaljerad tabell
-				const detailHeaders = [['Datum', 'Projekt', 'Totalt', 'Baslön', 'OB 1', 'OB 2', 'OB 3', 'OB 4']];
-				const detailData = filteredEntries.map(entry => {
-					const breakHours = parseFloat(entry.breakTime) || 0;
-					const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
-					const entryDateObj = new Date(entry.date);
-					return [
-						entryDateObj.toLocaleDateString('sv-SE'),
-						entry.projectName || 'Inget projekt',
-						formatHours(obHours.total),
-						formatHours(obHours.breakdown.base),
-						formatHours(obHours.breakdown.ob1),
-						formatHours(obHours.breakdown.ob2),
-						formatHours(obHours.breakdown.ob3),
-						formatHours(obHours.breakdown.ob4)
-					];
-				});
-				
-				const lastY = doc.lastAutoTable.finalY + 10;
-				doc.autoTable({
-					head: detailHeaders,
-					body: detailData,
-					startY: lastY,
-					theme: 'grid',
-					headStyles: { fillColor: [40, 40, 40], textColor: 255, fontStyle: 'bold' },
-					styles: { fontSize: 10 },
-					columnStyles: {
-						0: { cellWidth: 25 }, 1: { cellWidth: 40 }, 2: { cellWidth: 20 },
-						3: { cellWidth: 20 }, 4: { cellWidth: 15 }, 5: { cellWidth: 15 },
-						6: { cellWidth: 15 }, 7: { cellWidth: 15 }
-					},
-					margin: { top: 10 }
-				});
-				
-				// Sidfot
-				const pageCount = doc.internal.getNumberOfPages();
-				for (let i = 1; i <= pageCount; i++) {
-					doc.setPage(i);
-					doc.setFontSize(10);
-					doc.text(`Sida ${i} av ${pageCount}`, 195, 285, { align: 'right' });
-					doc.text('Tidbok OB - Timregistreringssystem', 15, 285);
-				}
-				
-				// Spara
-				doc.save(`${userName.replace(/\s+/g, '_')}_tidrapport.pdf`);
-				
-				// Stäng modal
-				document.getElementById('pdf-filter-modal').classList.add('hidden');
-				
-			} catch (error) {
-				console.error("Fel vid generering av PDF:", error);
-				alert("Ett fel inträffade vid generering av PDF. Kontrollera konsolen för mer information.");
-			}
-		}
+                    // Datumfilter
+                    if (startDate && entryYMD < startDate) return false;
+                    if (endDate && entryYMD > endDate) return false;
+                    
+                    // Projektfilter
+                    if (projectId !== 'all' && entry.projectId !== projectId) return false;
+                    
+                    // OB-filter
+                    if (obType !== 'all') {
+                        const breakHours = parseFloat(entry.breakTime) || 0;
+                        const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                        
+                        switch(obType) {
+                            case 'base': if (obHours.breakdown.base <= 0) return false; break;
+                            case 'ob1': if (obHours.breakdown.ob1 <= 0) return false; break;
+                            case 'ob2': if (obHours.breakdown.ob2 <= 0) return false; break;
+                            case 'ob3': if (obHours.breakdown.ob3 <= 0) return false; break;
+                            case 'ob4': if (obHours.breakdown.ob4 <= 0) return false; break;
+                        }
+                    }
+                    
+                    return true;
+                });
+                
+                // Sortera registreringar
+                filteredEntries.sort((a, b) => {
+                    const aDate = new Date(a.date);
+                    const bDate = new Date(b.date);
+                    
+                    switch(sortBy) {
+                        case 'date': return aDate - bDate;
+                        case 'project': return a.projectName.localeCompare(b.projectName);
+                        case 'hours': 
+                            const aHours = calculateOBHours(a.startTime, a.endTime, parseFloat(a.breakTime) || 0).total;
+                            const bHours = calculateOBHours(b.startTime, b.endTime, parseFloat(b.breakTime) || 0).total;
+                            return bHours - aHours;
+                        default: return aDate - bDate;
+                    }
+                });
+                
+                // Beräkna sammanfattning
+                let summary = { base: 0, ob1: 0, ob2: 0, ob3: 0, ob4: 0, total: 0 };
+                filteredEntries.forEach(entry => {
+                    const breakHours = parseFloat(entry.breakTime) || 0;
+                    const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                    summary.base += obHours.breakdown.base;
+                    summary.ob1 += obHours.breakdown.ob1;
+                    summary.ob2 += obHours.breakdown.ob2;
+                    summary.ob3 += obHours.breakdown.ob3;
+                    summary.ob4 += obHours.breakdown.ob4;
+                    summary.total += obHours.total;
+                });
+                
+                // Skapa PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Sidhuvud
+                doc.setFontSize(16);
+                doc.setTextColor(40);
+                doc.setFont("helvetica", "bold");
+                doc.text('Tidrapport', 105, 15, { align: 'center' });
+                
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                
+                // Företagsinfo
+                if (companySettings.address) doc.text(companySettings.address, 20, 25);
+                if (companySettings.postal) doc.text(companySettings.postal, 20, 30);
+                if (companySettings.phone) doc.text(`Tel ${companySettings.phone}`, 20, 35);
+                if (companySettings.orgnr) doc.text(`Organisationsnummer: ${companySettings.orgnr}`, 20, 40);
+                
+                // Användarinformation
+                const userName = document.getElementById('user-name').textContent;
+                doc.text(`Användare: ${userName}`, 140, 25);
+                doc.text(`Exporterad: ${new Date().toLocaleDateString('sv-SE')}`, 140, 30);
+                
+                // Sammanfattningstabell
+                const summaryHeaders = [['Timtyp', 'Timmar']];
+                const summaryData = [
+                    ['Baslön', formatHours(summary.base)],
+                    ['OB 1', formatHours(summary.ob1)],
+                    ['OB 2', formatHours(summary.ob2)],
+                    ['OB 3', formatHours(summary.ob3)],
+                    ['OB 4', formatHours(summary.ob4)],
+                    ['TOTALT', formatHours(summary.total)]
+                ];
+                
+                doc.autoTable({
+                    head: summaryHeaders,
+                    body: summaryData,
+                    startY: 50,
+                    theme: 'grid',
+                    headStyles: { fillColor: [59, 130, 246], textColor: 255, fontStyle: 'bold' },
+                    styles: { fontSize: 12 },
+                    columnStyles: { 0: { cellWidth: 60, fontStyle: 'bold' }, 1: { cellWidth: 40 } }
+                });
+                
+                // Detaljerad tabell
+                const detailHeaders = [['Datum', 'Projekt', 'Totalt', 'Baslön', 'OB 1', 'OB 2', 'OB 3', 'OB 4']];
+                const detailData = filteredEntries.map(entry => {
+                    const breakHours = parseFloat(entry.breakTime) || 0;
+                    const obHours = calculateOBHours(entry.startTime, entry.endTime, breakHours);
+                    const entryDateObj = new Date(entry.date);
+                    return [
+                        entryDateObj.toLocaleDateString('sv-SE'),
+                        entry.projectName || 'Inget projekt',
+                        formatHours(obHours.total),
+                        formatHours(obHours.breakdown.base),
+                        formatHours(obHours.breakdown.ob1),
+                        formatHours(obHours.breakdown.ob2),
+                        formatHours(obHours.breakdown.ob3),
+                        formatHours(obHours.breakdown.ob4)
+                    ];
+                });
+                
+                const lastY = doc.lastAutoTable.finalY + 10;
+                doc.autoTable({
+                    head: detailHeaders,
+                    body: detailData,
+                    startY: lastY,
+                    theme: 'grid',
+                    headStyles: { fillColor: [40, 40, 40], textColor: 255, fontStyle: 'bold' },
+                    styles: { fontSize: 10 },
+                    columnStyles: {
+                        0: { cellWidth: 25 }, 1: { cellWidth: 40 }, 2: { cellWidth: 20 },
+                        3: { cellWidth: 20 }, 4: { cellWidth: 15 }, 5: { cellWidth: 15 },
+                        6: { cellWidth: 15 }, 7: { cellWidth: 15 }
+                    },
+                    margin: { top: 10 }
+                });
+                
+                // Sidfot
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(10);
+                    doc.text(`Sida ${i} av ${pageCount}`, 195, 285, { align: 'right' });
+                    doc.text('Tidbok OB - Timregistreringssystem', 15, 285);
+                }
+                
+                // Spara
+                doc.save(`${userName.replace(/\s+/g, '_')}_tidrapport.pdf`);
+                
+                // Stäng modal
+                document.getElementById('pdf-filter-modal').classList.add('hidden');
+                
+            } catch (error) {
+                console.error("Fel vid generering av PDF:", error);
+                alert("Ett fel inträffade vid generering av PDF. Kontrollera konsolen för mer information.");
+            }
+        }
 
         
         // Funktion för att exportera till Word
@@ -1976,6 +2026,9 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            // Stäng modal
+            document.getElementById('pdf-filter-modal').classList.add('hidden');
         }
         
         // Initiera appen när DOM är klar
@@ -2086,6 +2139,11 @@
                 const password = document.getElementById('password').value;
                 const authMessage = document.getElementById('auth-message');
                 
+                if (!email || !password) {
+                    authMessage.textContent = 'Fyll i både e-post och lösenord';
+                    return;
+                }
+                
                 window.firebase.signInWithEmailAndPassword(window.firebase.auth, email, password)
                     .catch((error) => {
                         authMessage.textContent = error.message;
@@ -2100,6 +2158,11 @@
                 const phone = document.getElementById('reg-phone').value;
                 const personalnumber = document.getElementById('reg-personalnumber').value;
                 const authMessage = document.getElementById('auth-message');
+                
+                if (!email || !password || !firstname || !lastname) {
+                    authMessage.textContent = 'Fyll i alla obligatoriska fält';
+                    return;
+                }
                 
                 window.firebase.createUserWithEmailAndPassword(window.firebase.auth, email, password)
                     .then((userCredential) => {
@@ -2121,37 +2184,37 @@
                     });
             });
 
-			document.getElementById('logout-btn').addEventListener('click', () => {
-				window.firebase.signOut(window.firebase.auth);
-			});
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                window.firebase.signOut(window.firebase.auth);
+            });
 
-			// ============================
-			// EVENT LISTENERS – PROFIL
-			// ============================
+            // ============================
+            // EVENT LISTENERS – PROFIL
+            // ============================
 
-			// Spara profil
-			document.getElementById('save-profile-btn').addEventListener('click', () => {
-				if (currentUser) {
-					saveUserProfile(currentUser.uid);
-				} else {
-					alert("Ingen användare är inloggad.");
-				}
-			});
+            // Spara profil
+            document.getElementById('save-profile-btn').addEventListener('click', () => {
+                if (currentUser) {
+                    saveUserProfile(currentUser.uid);
+                } else {
+                    alert("Ingen användare är inloggad.");
+                }
+            });
 
-			// Avbryt profil
-			document.getElementById('cancel-profile-btn').addEventListener('click', () => {
-				document.getElementById('profile-modal').classList.add('hidden');
-			});
+            // Avbryt profil
+            document.getElementById('cancel-profile-btn').addEventListener('click', () => {
+                document.getElementById('profile-modal').classList.add('hidden');
+            });
 
-			// Öppna profil-modal från navbar-knappen
-			document.getElementById('profile-btn').addEventListener('click', () => {
-				if (currentUser) {
-					loadUserProfile(currentUser.uid);
-					document.getElementById('profile-modal').classList.remove('hidden');
-				} else {
-					alert("Du måste logga in först.");
-				}
-			});
+            // Öppna profil-modal från navbar-knappen
+            document.getElementById('profile-btn').addEventListener('click', () => {
+                if (currentUser) {
+                    loadUserProfile(currentUser.uid);
+                    document.getElementById('profile-modal').classList.remove('hidden');
+                } else {
+                    alert("Du måste logga in först.");
+                }
+            });
 
             
             document.getElementById('settings-toggle').addEventListener('click', () => {
@@ -2190,8 +2253,13 @@
             
             document.getElementById('export-word').addEventListener('click', () => {
                 exportToPDF(); // Öppna filtermodalen först
-                // Word-export kommer att hanteras separat efter att användaren valt filter
-                document.getElementById('generate-pdf-btn').addEventListener('click', exportToWord, { once: true });
+                // Reemplazar el event listener para generar Word en lugar de PDF
+                const generateBtn = document.getElementById('generate-pdf-btn');
+                const originalHandler = generateBtn.onclick;
+                generateBtn.onclick = function() {
+                    exportToWord();
+                    generateBtn.onclick = originalHandler; // Restaurar el handler original
+                };
             });
             
             document.getElementById('generate-pdf-btn').addEventListener('click', generatePDF);
