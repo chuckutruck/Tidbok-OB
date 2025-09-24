@@ -334,7 +334,7 @@
 <body class="bg-gray-50 min-h-screen">
     <div id="app" class="flex flex-col min-h-screen">
         <!-- Navigationsfält -->
-        <nav class="bg-primary text-white shadow-lg">
+        <nav class="bg-blue-600 text-white shadow-lg">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center">
                     <i class="fas fa-clock text-2xl mr-2"></i>
@@ -355,10 +355,10 @@
                         <div class="flex items-center">
                             <img id="user-avatar" class="w-8 h-8 rounded-full mr-2" src="https://ui-avatars.com/api/?background=random&name=U" alt="Avatar">
                             <span id="user-name" class="mr-2 text-sm">Användare</span>
-                            <button id="profile-btn" class="bg-white text-primary px-2 py-1 rounded hover:bg-gray-200 transition mr-2">
+                            <button id="profile-btn" class="bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition mr-2">
                                 <i class="fas fa-user"></i>
                             </button>
-                            <button id="logout-btn" class="bg-white text-primary px-2 py-1 rounded hover:bg-gray-200 transition">
+                            <button id="logout-btn" class="bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition">
                                 <i class="fas fa-sign-out-alt"></i>
                             </button>
                         </div>
@@ -417,16 +417,16 @@
                 <div id="login-tab" class="auth-tab active">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="email">E-post</label>
-                        <input type="email" id="email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="email">
+                        <input type="email" id="email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="email">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="password">Lösenord</label>
-                        <input type="password" id="password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="current-password">
+                        <input type="password" id="password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="current-password">
                     </div>
                     
                     <div class="mb-6">
-                        <button id="login-btn" class="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-blue-600 transition">
+                        <button id="login-btn" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition">
                             Logga in
                         </button>
                     </div>
@@ -436,36 +436,36 @@
                 <div id="register-tab" class="auth-tab">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-email">E-post</label>
-                        <input type="email" id="reg-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="email">
+                        <input type="email" id="reg-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="email">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-password">Lösenord</label>
-                        <input type="password" id="reg-password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="new-password">
+                        <input type="password" id="reg-password" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="new-password">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-firstname">Förnamn</label>
-                        <input type="text" id="reg-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="given-name">
+                        <input type="text" id="reg-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="given-name">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-lastname">Efternamn</label>
-                        <input type="text" id="reg-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="family-name">
+                        <input type="text" id="reg-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="family-name">
                     </div>
                     
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2" for="reg-phone">Telefon</label>
-                        <input type="tel" id="reg-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="tel">
+                        <input type="tel" id="reg-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="tel">
                     </div>
                     
                     <div class="mb-6">
                         <label class="block text-gray-700 mb-2" for="reg-personalnumber">Personnummer</label>
-                        <input type="text" id="reg-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" autocomplete="off">
+                        <input type="text" id="reg-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off">
                     </div>
                     
                     <div class="mb-6">
-                        <button id="register-btn" class="w-full bg-secondary text-white py-3 px-4 rounded-md hover:bg-green-500 transition">
+                        <button id="register-btn" class="w-full bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 transition">
                             Skapa konto
                         </button>
                     </div>
@@ -504,15 +504,15 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-gray-700 mb-2">Datum</label>
-                                <input type="date" id="work-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <input type="date" id="work-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             
                             <div>
                                 <label class="block text-gray-700 mb-2">Projekt</label>
-                                <select id="project-select" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <select id="project-select" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">Välj projekt</option>
                                 </select>
-                                <button id="new-project-btn" class="mt-2 text-sm text-primary hover:underline">
+                                <button id="new-project-btn" class="mt-2 text-sm text-blue-600 hover:underline">
                                     <i class="fas fa-plus mr-1"></i> Nytt projekt
                                 </button>
                             </div>
@@ -520,17 +520,17 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-gray-700 mb-2">Starttid</label>
-                                    <input type="time" id="start-time" value="01:30" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <input type="time" id="start-time" value="01:30" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 mb-2">Sluttid</label>
-                                    <input type="time" id="end-time" value="10:00" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <input type="time" id="end-time" value="10:00" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
                             </div>
                             
                             <div>
                                 <label class="block text-gray-700 mb-2">Rast</label>
-                                <select id="break-time" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <select id="break-time" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="0.0">0.0</option>
                                     <option value="0.5" selected>En halvtimme</option>
                                     <option value="1">1 timme</option>
@@ -540,15 +540,15 @@
                             
                             <div>
                                 <label class="block text-gray-700 mb-2">Kollegor</label>
-                                <input type="text" id="colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <input type="text" id="colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             
                             <div>
                                 <label class="block text-gray-700 mb-2">Anteckningar</label>
-                                <textarea id="notes" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                                <textarea id="notes" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                             </div>
                             
-                            <button id="save-hours-btn" class="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-blue-600 transition">
+                            <button id="save-hours-btn" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition">
                                 Spara registrering
                             </button>
                         </div>
@@ -592,7 +592,7 @@
                     <div class="bg-white rounded-xl shadow-md p-6 mb-6">
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="text-xl font-bold text-gray-800">Mina projekt</h2>
-                            <button id="create-project-btn" class="bg-primary text-white p-3 rounded-full hover:bg-blue-600 transition">
+                            <button id="create-project-btn" class="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -609,13 +609,13 @@
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="text-xl font-bold text-gray-800">Tidshistorik</h2>
                             <div class="flex space-x-2 filter-bar">
-                                <select id="filter-year" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <select id="filter-year" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="all">Alla år</option>
                                 </select>
-                                <select id="filter-month" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <select id="filter-month" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="all">Alla månader</option>
                                 </select>
-                                <select id="filter-ob" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <select id="filter-ob" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="all">Alla OB-typer</option>
                                     <option value="base">Baslön</option>
                                     <option value="ob1">OB 1</option>
@@ -623,8 +623,11 @@
                                     <option value="ob3">OB 3</option>
                                     <option value="ob4">OB 4</option>
                                 </select>
+                                <button id="sort-order" class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition">
+                                    <i class="fas fa-sort-amount-down"></i>
+                                </button>
                                 <div class="flex space-x-2">
-                                    <button id="export-pdf" class="bg-primary text-white p-2 rounded-md hover:bg-blue-600 transition">
+                                    <button id="export-pdf" class="bg-red-600 text-white p-2 rounded-md hover:bg-red-700 transition">
                                         <i class="fas fa-file-pdf"></i>
                                     </button>
                                     <button id="export-word" class="bg-green-600 text-white p-2 rounded-md hover:bg-green-700 transition">
@@ -661,7 +664,7 @@
         </main>
 
         <!-- Sidfot -->
-        <footer class="bg-dark text-white py-4 mt-auto desktop-only">
+        <footer class="bg-gray-800 text-white py-4 mt-auto desktop-only">
             <div class="container mx-auto px-4 text-center">
                 <p>Tidbok OB &copy; 2025 - Alla rättigheter förbehållna</p>
             </div>
@@ -676,22 +679,22 @@
             
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2">Projektnamn</label>
-                <input type="text" id="project-name" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                <input type="text" id="project-name" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2">Projektkod</label>
-                <input type="text" id="project-code" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                <input type="text" id="project-code" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2">Beskrivning (valfritt)</label>
-                <textarea id="project-description" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                <textarea id="project-description" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
             
             <div class="flex justify-end space-x-3">
                 <button id="cancel-project-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Avbryt</button>
-                <button id="save-project-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Spara</button>
+                <button id="save-project-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Spara</button>
             </div>
         </div>
     </div>
@@ -704,33 +707,33 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-gray-700 mb-2">Förnamn</label>
-                    <input type="text" id="profile-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-firstname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Efternamn</label>
-                    <input type="text" id="profile-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-lastname" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">E-post</label>
-                    <input type="email" id="profile-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" readonly>
+                    <input type="email" id="profile-email" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" readonly>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Telefon</label>
-                    <input type="text" id="profile-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-phone" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Personnummer</label>
-                    <input type="text" id="profile-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="profile-personalnumber" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
             
             <div class="mt-6 flex justify-end space-x-3">
                 <button id="cancel-profile-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Avbryt</button>
-                <button id="save-profile-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Spara</button>
+                <button id="save-profile-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Spara</button>
             </div>
         </div>
     </div>
@@ -745,7 +748,7 @@
             </div>
             
             <div class="mt-6 flex justify-end">
-                <button id="close-detail-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Stäng</button>
+                <button id="close-detail-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Stäng</button>
             </div>
         </div>
     </div>
@@ -759,12 +762,12 @@
                 <input type="hidden" id="edit-id">
                 <div>
                     <label class="block text-gray-700 mb-2">Datum</label>
-                    <input type="date" id="edit-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="date" id="edit-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Projekt</label>
-                    <select id="edit-project" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="edit-project" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Välj projekt</option>
                     </select>
                 </div>
@@ -772,17 +775,17 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-gray-700 mb-2">Starttid</label>
-                        <input type="time" id="edit-start" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="time" id="edit-start" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-gray-700 mb-2">Sluttid</label>
-                        <input type="time" id="edit-end" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="time" id="edit-end" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Rast</label>
-                    <select id="edit-break" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="edit-break" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="0.5">En halvtimme</option>
                         <option value="1">1 timme</option>
                         <option value="2">2 timmar</option>
@@ -791,18 +794,18 @@
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Kollegor</label>
-                    <input type="text" id="edit-colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <input type="text" id="edit-colleagues" placeholder="Namn separerade med kommatecken" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Anteckningar</label>
-                    <textarea id="edit-notes" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    <textarea id="edit-notes" rows="2" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
             </div>
             
             <div class="mt-6 flex justify-end space-x-3">
                 <button id="cancel-edit-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Avbryt</button>
-                <button id="save-edit-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Spara</button>
+                <button id="save-edit-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Spara</button>
             </div>
         </div>
     </div>
@@ -810,30 +813,30 @@
     <!-- Modal för PDF-exportfilter -->
     <div id="pdf-filter-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-xl shadow-lg w-full max-w-sm md:max-w-md p-4 md:p-6 mx-4 modal-content">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Exportera till PDF</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Exportera till PDF/Word</h3>
             
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-gray-700 mb-2">Från datum</label>
-                        <input type="date" id="pdf-start-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="date" id="pdf-start-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-gray-700 mb-2">Till datum</label>
-                        <input type="date" id="pdf-end-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="date" id="pdf-end-date" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Projekt</label>
-                    <select id="pdf-project" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="pdf-project" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="all">Alla projekt</option>
                     </select>
                 </div>
                 
                 <div>
                     <label class="block text-gray-700 mb-2">OB-typ</label>
-                    <select id="pdf-ob" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="pdf-ob" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="all">Alla OB-typer</option>
                         <option value="base">Baslön</option>
                         <option value="ob1">OB 1</option>
@@ -845,7 +848,7 @@
                 
                 <div>
                     <label class="block text-gray-700 mb-2">Sortera efter</label>
-                    <select id="pdf-sort" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select id="pdf-sort" class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="date">Datum</option>
                         <option value="project">Projekt</option>
                         <option value="hours">Timmar</option>
@@ -854,8 +857,9 @@
             </div>
             
             <div class="mt-6 flex justify-end space-x-3">
-                <button id="cancel-pdf-btn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Avbryt</button>
-                <button id="generate-pdf-btn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Generera PDF</button>
+                <button id="cancel-pdf-btn" class="px-4 py-2 text-blue-600 hover:text-gray-800">Avbryt</button>
+                <button id="generate-pdf-btn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Generera PDF</button>
+                <button id="generate-word-btn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">Generera Word</button>
             </div>
         </div>
     </div>
@@ -871,6 +875,7 @@
             ob: 'all'
         };
         let companySettings = {};
+        let sortAscending = false;
         
         // Funktion för att beräkna OB-timmar enligt specifika regler
         function calculateOBHours(start, end, breakHours) {
@@ -879,7 +884,6 @@
 
             const startDate = new Date(start);
             const endDate = new Date(end);
-            const dayOfWeek = startDate.getDay(); // 0 = söndag
 
             // Total arbetad tid (i timmar), exklusive rast
             const totalWorkedHours = ((endDate - startDate) / MS_PER_HOUR) - breakHours;
@@ -896,7 +900,7 @@
             // Bestäm OB-typ för en specifik timme
             function getHourType(date) {
                 const hour = date.getHours() + date.getMinutes() / 60;
-                const day = date.getDay();
+                const day = date.getDay(); // 0 = söndag
 
                 if (day === 0) return 'ob4'; // Söndag: allt är OB 4
                 if (day === 6) return hour >= 13 ? 'ob3' : 'base'; // Lördag
@@ -1199,7 +1203,12 @@
                 document.getElementById('total-hours').textContent = formatHours(total);
                 
                 // Skapa månadsgrupper
-                Object.keys(entriesByMonth).sort().reverse().forEach(monthKey => {
+                const monthKeys = Object.keys(entriesByMonth).sort();
+                if (sortAscending) {
+                    monthKeys.reverse();
+                }
+                
+                monthKeys.forEach(monthKey => {
                     const entries = entriesByMonth[monthKey];
                     const [year, month] = monthKey.split('-');
                     const monthNames = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
@@ -1217,7 +1226,7 @@
                     `;
                     
                     const monthContent = document.createElement('div');
-                    monthContent.className = 'month-content expanded'; // Cambiado a expanded por defecto
+                    monthContent.className = 'month-content expanded';
                     
                     const table = document.createElement('table');
                     table.className = 'min-w-full divide-y divide-gray-200';
@@ -1242,7 +1251,7 @@
                                         <td class="px-4 py-2">${projectName}</td>
                                         <td class="px-4 py-2">${formatHours(entry.obHours.total)}</td>
                                         <td class="px-4 py-2">
-                                            <button class="view-detail text-primary hover:underline" data-id="${entry.id}">
+                                            <button class="view-detail text-blue-600 hover:underline" data-id="${entry.id}">
                                                 <i class="fas fa-eye mr-1"></i> Detaljer
                                             </button>
                                         </td>
@@ -1878,7 +1887,7 @@
             });
             
             // Sortera registreringar
-            filteredEntries.sort((b, a) => {
+            filteredEntries.sort((a, b) => {
                 const aDate = new Date(a.date);
                 const bDate = new Date(b.date);
                 
@@ -2251,18 +2260,11 @@
             
             document.getElementById('export-pdf').addEventListener('click', exportToPDF);
             
-            document.getElementById('export-word').addEventListener('click', () => {
-                exportToPDF(); // Öppna filtermodalen först
-                // Reemplazar el event listener para generar Word en lugar de PDF
-                const generateBtn = document.getElementById('generate-pdf-btn');
-                const originalHandler = generateBtn.onclick;
-                generateBtn.onclick = function() {
-                    exportToWord();
-                    generateBtn.onclick = originalHandler; // Restaurar el handler original
-                };
-            });
+            document.getElementById('export-word').addEventListener('click', exportToPDF);
             
             document.getElementById('generate-pdf-btn').addEventListener('click', generatePDF);
+            
+            document.getElementById('generate-word-btn').addEventListener('click', exportToWord);
             
             document.getElementById('cancel-pdf-btn').addEventListener('click', () => {
                 document.getElementById('pdf-filter-modal').classList.add('hidden');
@@ -2281,6 +2283,20 @@
             
             document.getElementById('filter-ob').addEventListener('change', (e) => {
                 currentFilter.ob = e.target.value;
+                if (currentUser) loadTimeEntries(currentUser.uid);
+            });
+            
+            // Sortering
+            document.getElementById('sort-order').addEventListener('click', () => {
+                sortAscending = !sortAscending;
+                const icon = document.getElementById('sort-order').querySelector('i');
+                if (sortAscending) {
+                    icon.classList.remove('fa-sort-amount-down');
+                    icon.classList.add('fa-sort-amount-up');
+                } else {
+                    icon.classList.remove('fa-sort-amount-up');
+                    icon.classList.add('fa-sort-amount-down');
+                }
                 if (currentUser) loadTimeEntries(currentUser.uid);
             });
             
