@@ -165,18 +165,20 @@
             background-color: #e2e8f0;
         }
         
-        .month-content {
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        
-        .month-content.collapsed {
-            max-height: 0;
-        }
-        
-        .month-content.expanded {
-            max-height: 1000px;
-        }
+		.month-content {
+			overflow: hidden;
+			transition: max-height 0.3s ease;
+			max-height: 0;
+		}
+
+		.month-content.collapsed {
+			max-height: 0;
+		}
+
+		.month-content.expanded {
+			max-height: 5000px; /* Valor suficientemente grande */
+			overflow-y: auto; /* Permite scroll si es necesario */
+		}
         
         .chevron {
             transition: transform 0.3s ease;
@@ -1069,57 +1071,58 @@
                     pdfProjectSelect.appendChild(pdfOption);
                     
                     // Lägg till i projektlistan
-                    const projectElement = document.createElement('div');
-                    projectElement.className = 'flex justify-between items-center bg-gray-50 p-3 rounded mb-2';
-                    projectElement.innerHTML = `
-                        <div class="flex-1">
-                            <span class="font-medium">${project.name}</span>
-                            <p class="text-sm text-gray-500">${project.code}</p>
-                            ${project.description ? `<p class="text-sm text-gray-500">${project.description}</p>` : ''}
-                        </div>
-                        <button class="delete-project text-red-500 hover:text-red-700 p-2" data-id="${project.id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    `;
-                    projectsList.appendChild(projectElement);
-                });
-                
-                // Lägg till event listeners för att ta bort projekt
-                document.querySelectorAll('.delete-project').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const projectId = e.currentTarget.getAttribute('data-id');
-                        deleteProject(projectId);
-                    });
-                });
-            });
-        }
-        
-        // Funktion för att ladda tidsregistreringar
-        function loadTimeEntries(userId) {
-            const timeRef = window.firebase.ref(window.firebase.database, `users/${userId}/timeEntries`);
-            
-            window.firebase.onValue(timeRef, (snapshot) => {
-                timeEntries = [];
-                const historyContainer = document.getElementById('hours-history');
-                historyContainer.innerHTML = '';
-                
-                // Rensa sammanfattning
-                document.getElementById('base-hours').textContent = '0.00';
-                document.getElementById('ob1-hours').textContent = '0.00';
-                document.getElementById('ob2-hours').textContent = '0.00';
-                document.getElementById('ob3-hours').textContent = '0.00';
-                document.getElementById('ob4-hours').textContent = '0.00';
-                
-                // Ackumulatorer för statistik
-                let projectStats = {};
-                let weekStats = {};
-                let obSummary = {
-                    base: 0,
-                    ob1: 0,
-                    ob2: 0,
-                    ob3: 0,
-                    ob4: 0
-                };
+					// Lägg till i projektlistan
+					const projectElement = document.createElement('div');
+					projectElement.className = 'flex justify-between items-center bg-gray-50 p-3 rounded mb-2';
+					projectElement.innerHTML = `
+						<div class="flex-1">
+							<span class="font-medium">${project.name}</span>
+							<p class="text-sm text-gray-500">${project.code}</p>
+							${project.description ? `<p class="text-sm text-gray-500">${project.description}</p>` : ''}
+						</div>
+						<button class="delete-project text-red-500 hover:text-red-700 p-2" data-id="${project.id}">
+							<i class="fas fa-trash"></i>
+						</button>
+					`;
+					projectsList.appendChild(projectElement);
+					});
+
+					// Lägg till event listeners för att ta bort projekt
+					document.querySelectorAll('.delete-project').forEach(button => {
+						button.addEventListener('click', (e) => {
+							const projectId = e.currentTarget.getAttribute('data-id');
+							deleteProject(projectId);
+						});
+					});
+					});
+					}
+
+					// Funktion för att ladda tidsregistreringar
+					function loadTimeEntries(userId) {
+						const timeRef = window.firebase.ref(window.firebase.database, `users/${userId}/timeEntries`);
+						
+						window.firebase.onValue(timeRef, (snapshot) => {
+							timeEntries = [];
+							const historyContainer = document.getElementById('hours-history');
+							historyContainer.innerHTML = '';
+							
+							// Rensa sammanfattning
+							document.getElementById('base-hours').textContent = '0.00';
+							document.getElementById('ob1-hours').textContent = '0.00';
+							document.getElementById('ob2-hours').textContent = '0.00';
+							document.getElementById('ob3-hours').textContent = '0.00';
+							document.getElementById('ob4-hours').textContent = '0.00';
+							
+							// Ackumulatorer för statistik
+							let projectStats = {};
+							let weekStats = {};
+							let obSummary = {
+								base: 0,
+								ob1: 0,
+								ob2: 0,
+								ob3: 0,
+								ob4: 0
+							};
                 
                 // Gruppera poster per månad
                 const entriesByMonth = {};
@@ -1202,78 +1205,89 @@
                 const total = obSummary.base + obSummary.ob1 + obSummary.ob2 + obSummary.ob3 + obSummary.ob4;
                 document.getElementById('total-hours').textContent = formatHours(total);
                 
-                // Skapa månadsgrupper
-                const monthKeys = Object.keys(entriesByMonth).sort();
-                if (sortAscending) {
-                    monthKeys.reverse();
-                }
-                
-                monthKeys.forEach(monthKey => {
-                    const entries = entriesByMonth[monthKey];
-                    const [year, month] = monthKey.split('-');
-                    const monthNames = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
-                    const monthName = monthNames[parseInt(month) - 1];
-                    
-                    const monthGroup = document.createElement('div');
-                    monthGroup.className = 'month-group';
-                    
-                    const monthHeader = document.createElement('div');
-                    monthHeader.className = 'month-header';
-                    monthHeader.dataset.month = monthKey;
-                    monthHeader.innerHTML = `
-                        <h3 class="font-medium">${monthName} ${year}</h3>
-                        <span class="chevron"><i class="fas fa-chevron-down"></i></span>
-                    `;
-                    
-                    const monthContent = document.createElement('div');
-                    monthContent.className = 'month-content expanded';
-                    
-                    const table = document.createElement('table');
-                    table.className = 'min-w-full divide-y divide-gray-200';
-                    table.innerHTML = `
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projekt</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timmar</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detaljer</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Åtgärder</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            ${entries.map(entry => {
-                                const dateStr = new Date(entry.date).toLocaleDateString('sv-SE');
-                                const projectName = entry.projectName || 'Inget projekt';
-                                
-                                return `
-                                    <tr>
-                                        <td class="px-4 py-2 whitespace-nowrap">${dateStr}</td>
-                                        <td class="px-4 py-2">${projectName}</td>
-                                        <td class="px-4 py-2">${formatHours(entry.obHours.total)}</td>
-                                        <td class="px-4 py-2">
-                                            <button class="view-detail text-blue-600 hover:underline" data-id="${entry.id}">
-                                                <i class="fas fa-eye mr-1"></i> Detaljer
-                                            </button>
-                                        </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2 edit-entry p-1" data-id="${entry.id}">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-500 hover:text-red-700 delete-entry p-1" data-id="${entry.id}">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    `;
-                    
-                    monthContent.appendChild(table);
-                    monthGroup.appendChild(monthHeader);
-                    monthGroup.appendChild(monthContent);
-                    historyContainer.appendChild(monthGroup);
-                });
+				// Skapa månadsgrupper
+				const monthKeys = Object.keys(entriesByMonth).sort();
+				if (sortAscending) {
+					monthKeys.reverse();
+				}
+
+				monthKeys.forEach(monthKey => {
+					const entries = entriesByMonth[monthKey];
+					const [year, month] = monthKey.split('-');
+					const monthNames = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
+					const monthName = monthNames[parseInt(month) - 1];
+					
+					const monthGroup = document.createElement('div');
+					monthGroup.className = 'month-group';
+					
+					const monthHeader = document.createElement('div');
+					monthHeader.className = 'month-header';
+					monthHeader.dataset.month = monthKey;
+					monthHeader.innerHTML = `
+						<h3 class="font-medium">${monthName} ${year}</h3>
+						<span class="chevron"><i class="fas fa-chevron-down"></i></span>
+					`;
+					
+					const monthContent = document.createElement('div');
+					monthContent.className = 'month-content collapsed'; // Inicialmente colapsado
+					
+					// Ordenar entradas por fecha
+					entries.sort((a, b) => {
+						const dateA = new Date(a.date);
+						const dateB = new Date(b.date);
+						return sortAscending ? dateA - dateB : dateB - dateA;
+					});
+					
+					const table = document.createElement('table');
+					table.className = 'min-w-full divide-y divide-gray-200';
+					table.innerHTML = `
+						<thead class="bg-gray-50">
+							<tr>
+								<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+									<button class="sort-date-btn" data-month="${monthKey}">
+										Datum <i class="fas fa-sort"></i>
+									</button>
+								</th>
+								<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projekt</th>
+								<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timmar</th>
+								<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detaljer</th>
+								<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Åtgärder</th>
+							</tr>
+						</thead>
+						<tbody class="bg-white divide-y divide-gray-200">
+							${entries.map(entry => {
+								const dateStr = new Date(entry.date).toLocaleDateString('sv-SE');
+								const projectName = entry.projectName || 'Inget projekt';
+								
+								return `
+									<tr>
+										<td class="px-4 py-2 whitespace-nowrap">${dateStr}</td>
+										<td class="px-4 py-2">${projectName}</td>
+										<td class="px-4 py-2">${formatHours(entry.obHours.total)}</td>
+										<td class="px-4 py-2">
+											<button class="view-detail text-blue-600 hover:underline" data-id="${entry.id}">
+												<i class="fas fa-eye mr-1"></i> Detaljer
+											</button>
+										</td>
+										<td class="px-4 py-2 whitespace-nowrap">
+											<button class="text-blue-500 hover:text-blue-700 mr-2 edit-entry p-1" data-id="${entry.id}">
+												<i class="fas fa-edit"></i>
+											</button>
+											<button class="text-red-500 hover:text-red-700 delete-entry p-1" data-id="${entry.id}">
+												<i class="fas fa-trash"></i>
+											</button>
+										</td>
+									</tr>
+								`;
+							}).join('')}
+						</tbody>
+					`;
+					
+					monthContent.appendChild(table);
+					monthGroup.appendChild(monthHeader);
+					monthGroup.appendChild(monthContent);
+					historyContainer.appendChild(monthGroup);
+				});
                 
                 // Lägg till event listeners för månadsgrupper
                 document.querySelectorAll('.month-header').forEach(header => {
